@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/Common/">
+    <Project Path="Common/Messaging/Messaging.csproj" Id="53c1779d-2a52-432b-9154-a3e30ea67c47" />
     <Project Path="Common/ServiceDefaults/ServiceDefaults.csproj" Id="fdcc180e-cbd1-4ed4-9064-efc13f8ff0db" />
   </Folder>
   <Folder Name="/Services/" />
@@ -20,5 +21,8 @@
   </Folder>
   <Folder Name="/Services/TransactionService/">
     <Project Path="Services/TransactionService/TransactionService.API/TransactionService.API.csproj" Id="12e63261-2108-4271-8ddf-e26cec7b5d46" />
+    <Project Path="Services/TransactionService/TransactionService.Application/TransactionService.Application.csproj" Id="b0d49201-d245-4b68-8a91-d75d620f0fb0" />
+    <Project Path="Services/TransactionService/TransactionService.Domain/TransactionService.Domain.csproj" Id="80430054-f108-44ca-9679-e5a55e919cfd" />
+    <Project Path="Services/TransactionService/TransactionService.Infrastructure/TransactionService.Infrastructure.csproj" Id="26a0d9f3-b31d-46d3-83b7-d42a465594a8" />
   </Folder>
 </Solution>
