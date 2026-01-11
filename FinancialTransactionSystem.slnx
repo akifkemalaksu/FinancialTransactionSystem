@@ -1,0 +1,24 @@
+<Solution>
+  <Folder Name="/Common/">
+    <Project Path="Common/ServiceDefaults/ServiceDefaults.csproj" Id="fdcc180e-cbd1-4ed4-9064-efc13f8ff0db" />
+  </Folder>
+  <Folder Name="/Services/" />
+  <Folder Name="/Services/AccountService/">
+    <Project Path="Services/AccountService/AccountService.API/AccountService.API.csproj" Id="c2aa7d70-0d57-4f00-a6e8-75f63e840935" />
+    <Project Path="Services/AccountService/AccountService.Application/AccountService.Application.csproj" Id="fc2084c9-fda5-424b-99ec-4ce2a23a2295" />
+    <Project Path="Services/AccountService/AccountService.Domain/AccountService.Domain.csproj" Id="5f74b535-9f7f-4ddf-a1a0-ddbd98b93be0" />
+    <Project Path="Services/AccountService/AccountService.Infrastructure/AccountService.Infrastructure.csproj" Id="b63a0f9a-fbf0-4d51-879f-8bd4e78c7ae9" />
+  </Folder>
+  <Folder Name="/Services/FraudDetectionService/">
+    <Project Path="Services/FraudDetectionService/FraudDetectionService.API/FraudDetectionService.API.csproj" Id="4dfb2332-37e6-45c5-a8e3-f874ac618f18" />
+  </Folder>
+  <Folder Name="/Services/LedgerService/">
+    <Project Path="Services/LedgerService/LedgerService.API/LedgerService.API.csproj" Id="df1a7df4-95f9-4b60-af04-52556a6ec7e7" />
+  </Folder>
+  <Folder Name="/Services/NotificationService/">
+    <Project Path="Services/NotificationService/NotificationService.API/NotificationService.API.csproj" Id="503d08ab-6f42-456c-b1bf-0babb4181b3d" />
+  </Folder>
+  <Folder Name="/Services/TransactionService/">
+    <Project Path="Services/TransactionService/TransactionService.API/TransactionService.API.csproj" Id="12e63261-2108-4271-8ddf-e26cec7b5d46" />
+  </Folder>
+</Solution>
