@@ -11,13 +11,20 @@
     <Project Path="Services/AccountService/AccountService.Infrastructure/AccountService.Infrastructure.csproj" Id="b63a0f9a-fbf0-4d51-879f-8bd4e78c7ae9" />
   </Folder>
   <Folder Name="/Services/FraudDetectionService/">
-    <Project Path="Services/FraudDetectionService/FraudDetectionService.API/FraudDetectionService.API.csproj" Id="4dfb2332-37e6-45c5-a8e3-f874ac618f18" />
+    <Project Path="Services/FraudDetectionService/FraudDetectionService.API/FraudDetectionService.API.csproj" Id="a5b1ac21-62ef-40d0-826c-ed91878e1a72" />
+    <Project Path="Services/FraudDetectionService/FraudDetectionService.Application/FraudDetectionService.Application.csproj" Id="7cd8596d-af0b-4535-8d9b-0bbd2992cc6d" />
   </Folder>
   <Folder Name="/Services/LedgerService/">
     <Project Path="Services/LedgerService/LedgerService.API/LedgerService.API.csproj" Id="df1a7df4-95f9-4b60-af04-52556a6ec7e7" />
+    <Project Path="Services/LedgerService/LedgerService.Application/LedgerService.Application.csproj" Id="f644ed43-bc9f-46f9-b1c6-782ae29a4189" />
+    <Project Path="Services/LedgerService/LedgerService.Domain/LedgerService.Domain.csproj" Id="47a4897f-5fca-4ae2-bc06-3838764ea74b" />
+    <Project Path="Services/LedgerService/LedgerService.Infrastructure/LedgerService.Infrastructure.csproj" Id="34a6a0c5-4fa3-4f2c-b487-817a27aadf28" />
   </Folder>
   <Folder Name="/Services/NotificationService/">
     <Project Path="Services/NotificationService/NotificationService.API/NotificationService.API.csproj" Id="503d08ab-6f42-456c-b1bf-0babb4181b3d" />
+    <Project Path="Services/NotificationService/NotificationService.Application/NotificationService.Application.csproj" Id="7c873091-dfb5-49a8-88c9-661907a8c76e" />
+    <Project Path="Services/NotificationService/NotificationService.Domain/NotificationService.Domain.csproj" Id="d7509c8a-1a5a-47ed-bf23-17c460fa42f2" />
+    <Project Path="Services/NotificationService/NotificationService.Infrastructure/NotificationService.Infrastructure.csproj" Id="12f6a15c-e893-440a-a24d-2d16a1fac573" />
   </Folder>
   <Folder Name="/Services/TransactionService/">
     <Project Path="Services/TransactionService/TransactionService.API/TransactionService.API.csproj" Id="12e63261-2108-4271-8ddf-e26cec7b5d46" />

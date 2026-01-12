@@ -1,4 +1,4 @@
-using AccountService.Application.Dtos.AccountDtos;
+using AccountService.Application.Dtos.Accounts;
 
 namespace AccountService.Application.Features.AccountFeatures.GetAccountsByClientId
 {

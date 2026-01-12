@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\Messaging\Messaging.csproj" />
     <ProjectReference Include="..\..\..\Common\ServiceDefaults\ServiceDefaults.csproj" />
     <ProjectReference Include="..\AccountService.Domain\AccountService.Domain.csproj" />
   </ItemGroup>

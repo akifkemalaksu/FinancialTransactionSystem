@@ -1,9 +1,8 @@
-using TransactionService.Application;
 using TransactionService.Infrastructure;
+using TransactionService.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.RegisterApplicationServices();
 builder.Services.RegisterInfrastructureServices(builder.Configuration);
 
 builder.Services.AddControllers();
@@ -11,6 +10,8 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+app.Services.ApplyMigrations();
 
 if (app.Environment.IsDevelopment())
 {

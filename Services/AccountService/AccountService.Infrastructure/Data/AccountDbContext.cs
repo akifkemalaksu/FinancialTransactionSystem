@@ -1,4 +1,5 @@
 ﻿using AccountService.Domain.Entities;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
 namespace AccountService.Infrastructure.Data
@@ -13,5 +14,14 @@ namespace AccountService.Infrastructure.Data
         public DbSet<Account> Accounts { get; set; }
 
         public DbSet<Client> Clients { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.AddInboxStateEntity();
+            modelBuilder.AddOutboxMessageEntity();
+            modelBuilder.AddOutboxStateEntity();
+
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }

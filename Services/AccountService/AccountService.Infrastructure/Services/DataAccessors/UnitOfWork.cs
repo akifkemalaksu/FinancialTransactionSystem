@@ -3,20 +3,17 @@ using AccountService.Infrastructure.Data;
 
 namespace AccountService.Infrastructure.Services.DataAccessors
 {
-    public class UnitOfWork : IUnitOfWork
+    public class UnitOfWork(
+        AccountDbContext _context
+    ) : IUnitOfWork
     {
-        private readonly AccountDbContext _dbContext;
-        public IAccountRepository Accounts { get; private set; }
+        private IAccountRepository? _accounts;
 
-        public UnitOfWork(AccountDbContext dbContext)
-        {
-            _dbContext = dbContext;
-            Accounts = new AccountRepository(_dbContext);
-        }
+        public IAccountRepository Accounts => _accounts ??= new AccountRepository(_context);
 
-        public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) => _dbContext.SaveChangesAsync(cancellationToken);
+        public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) => _context.SaveChangesAsync(cancellationToken);
 
-        public void Dispose() => _dbContext.Dispose();
+        public void Dispose() => _context.Dispose();
         
     }
 }

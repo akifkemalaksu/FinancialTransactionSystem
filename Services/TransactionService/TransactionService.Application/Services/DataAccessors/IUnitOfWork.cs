@@ -2,7 +2,7 @@ namespace TransactionService.Application.Services.DataAccessors
 {
     public interface IUnitOfWork : IDisposable
     {
-        ITransactionRepository Transactions { get; }
+        ITransferRepository Transfers { get; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }

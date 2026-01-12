@@ -1,7 +1,7 @@
-﻿using AccountService.Application.Dtos.AccountDtos;
 using AccountService.Application.Services.DataAccessors;
 using AccountService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using AccountService.Application.Dtos.Accounts;
 
 namespace AccountService.Infrastructure.Services.DataAccessors
 {
@@ -20,8 +20,7 @@ namespace AccountService.Infrastructure.Services.DataAccessors
                     Currency = x.Currency,
                     CreatedAt = x.CreatedAt,
                     AccountNumber = x.AccountNumber,
-                    Id = x.Id,
-                    IsActive = x.IsActive
+                    Id = x.Id
                 })
                 .ToListAsync(cancellationToken);
 
@@ -39,8 +38,25 @@ namespace AccountService.Infrastructure.Services.DataAccessors
                     Currency = x.Currency,
                     CreatedAt = x.CreatedAt,
                     AccountNumber = x.AccountNumber,
-                    Id = x.Id,
-                    IsActive = x.IsActive
+                    Id = x.Id
+                })
+                .FirstOrDefaultAsync(cancellationToken);
+
+            return account;
+        }
+
+        public async Task<AccountDto?> GetByAccountNumberAsync(string accountNumber, CancellationToken cancellationToken = default)
+        {
+            var account = await _dbContext.Accounts
+                .Where(a => a.AccountNumber == accountNumber)
+                .Select(x => new AccountDto
+                {
+                    ClientId = x.ClientId,
+                    Balance = x.Balance,
+                    Currency = x.Currency,
+                    CreatedAt = x.CreatedAt,
+                    AccountNumber = x.AccountNumber,
+                    Id = x.Id
                 })
                 .FirstOrDefaultAsync(cancellationToken);
 

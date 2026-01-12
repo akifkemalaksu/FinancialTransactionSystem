@@ -1,8 +1,14 @@
+using MassTransit;
+using Messaging.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ServiceDefaults.IoC;
+using TransactionService.Application.Features.TransferFeatures.CreateTransfer;
+using TransactionService.Application.Services.Clients;
 using TransactionService.Application.Services.DataAccessors;
 using TransactionService.Infrastructure.Data;
+using TransactionService.Infrastructure.Services.Clients;
 using TransactionService.Infrastructure.Services.DataAccessors;
 
 namespace TransactionService.Infrastructure
@@ -15,7 +21,15 @@ namespace TransactionService.Infrastructure
 
             services.AddNpgsql<TransactionDbContext>(configuration.GetConnectionString("DatabaseConnection"));
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddScoped<ITransactionRepository, TransactionRepository>();
+
+            services.AddMessagingBus<TransactionDbContext>(configuration, config => {
+                config.UsePostgres();
+            });
+
+            services.AddHttpClient<IAccountService, AccountService>(nameof(AccountService));
+            services.AddHttpClient<IFraudDetectionService, FraudDetectionService>(nameof(FraudDetectionService));
+
+            CQRSServiceRegistrar.Register(services, typeof(CreateTransferCommand));
         }
     }
 }

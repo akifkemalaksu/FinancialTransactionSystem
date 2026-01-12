@@ -1,4 +1,4 @@
-﻿using AccountService.Application.Dtos.AccountDtos;
+﻿using AccountService.Application.Dtos.Accounts;
 
 namespace AccountService.Application.Services.DataAccessors
 {
@@ -6,5 +6,6 @@ namespace AccountService.Application.Services.DataAccessors
     {
         Task<List<AccountDto>> GetAccountsByClientIdAsync(Guid clientId, CancellationToken cancellationToken = default);
         Task<AccountDto?> GetByIdAsync(Guid accountId, CancellationToken cancellationToken = default);
+        Task<AccountDto?> GetByAccountNumberAsync(string accountNumber, CancellationToken cancellationToken = default);
     }
 }

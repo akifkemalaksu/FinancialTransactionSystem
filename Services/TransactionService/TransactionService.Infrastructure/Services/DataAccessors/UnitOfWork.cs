@@ -3,26 +3,16 @@ using TransactionService.Infrastructure.Data;
 
 namespace TransactionService.Infrastructure.Services.DataAccessors
 {
-    public class UnitOfWork : IUnitOfWork
+    public class UnitOfWork(
+        TransactionDbContext _context
+    ) : IUnitOfWork
     {
-        private readonly TransactionDbContext _context;
+        private ITransferRepository? _transfers;
 
-        public UnitOfWork(TransactionDbContext context, ITransactionRepository transactionRepository)
-        {
-            _context = context;
-            Transactions = transactionRepository;
-        }
+        public ITransferRepository Transfers => _transfers ??= new TransferRepository(_context);
 
-        public ITransactionRepository Transactions { get; }
+        public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) => _context.SaveChangesAsync(cancellationToken);
 
-        public void Dispose()
-        {
-            _context.Dispose();
-        }
-
-        public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-        {
-            return await _context.SaveChangesAsync(cancellationToken);
-        }
+        public void Dispose() => _context.Dispose();
     }
 }

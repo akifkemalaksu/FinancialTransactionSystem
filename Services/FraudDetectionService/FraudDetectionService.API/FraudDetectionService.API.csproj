@@ -14,4 +14,8 @@
     <Folder Include="Controllers\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\FraudDetectionService.Application\FraudDetectionService.Application.csproj" />
+  </ItemGroup>
+
 </Project>

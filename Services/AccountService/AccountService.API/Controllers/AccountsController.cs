@@ -1,4 +1,4 @@
-﻿using AccountService.Application.Features.AccountFeatures.GetAccountById;
+﻿using AccountService.Application.Features.AccountFeatures.GetAccountByNumber;
 using Microsoft.AspNetCore.Mvc;
 using ServiceDefaults.Controllers;
 using ServiceDefaults.Dtos.Responses;
@@ -12,14 +12,14 @@ namespace AccountService.API.Controllers
         IQueryDispatcher _queryDispatcher
     ) : ApiControllerBase
     {
-        [HttpGet("{accountId}")]
-        public async Task<IActionResult> GetAccountByIdAsync(Guid accountId)
+        [HttpGet("by-account-number/{accountNumber}")]
+        public async Task<IActionResult> GetAccountByNumberAsync(string accountNumber)
         {
-            var getAccountByIdQuery = new GetAccountByIdQuery
+            var getAccountByNumberQuery = new GetAccountByNumberQuery
             {
-                AccountId = accountId
+                AccountNumber = accountNumber
             };
-            var response = await _queryDispatcher.DispatchAsync<GetAccountByIdQuery, ApiResponse<GetAccountByIdQueryResult>>(getAccountByIdQuery);
+            var response = await _queryDispatcher.DispatchAsync<GetAccountByNumberQuery, ApiResponse<GetAccountByNumberQueryResult>>(getAccountByNumberQuery);
             return CreateResult(response);
         }
     }
