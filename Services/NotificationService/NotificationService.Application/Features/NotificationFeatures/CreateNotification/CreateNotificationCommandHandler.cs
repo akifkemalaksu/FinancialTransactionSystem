@@ -19,7 +19,7 @@ namespace NotificationService.Application.Features.NotificationFeatures.CreateNo
                 Message = command.Message
             };
 
-            await _unitOfWork.Notifications.AddAsync(notification, cancellationToken);
+            _unitOfWork.Notifications.Add(notification);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return ApiResponse<CreateNotificationCommandResult>.Success(

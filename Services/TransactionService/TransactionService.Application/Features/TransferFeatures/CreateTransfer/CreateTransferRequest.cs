@@ -1,3 +1,4 @@
+using ServiceDefaults.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace TransactionService.Application.Features.TransferFeatures.CreateTransfer
@@ -15,5 +16,7 @@ namespace TransactionService.Application.Features.TransferFeatures.CreateTransfe
         public decimal Amount { get; init; }
 
         public string? Description { get; init; }
+
+        public TransactionType? Type { get; init; }
     }
 }

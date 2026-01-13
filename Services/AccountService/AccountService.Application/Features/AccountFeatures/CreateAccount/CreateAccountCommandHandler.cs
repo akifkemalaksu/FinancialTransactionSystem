@@ -36,7 +36,7 @@ namespace AccountService.Application.Features.AccountFeatures.CreateAccount
                 CreatedAt = DateTime.UtcNow
             };
 
-            await _unitOfWork.Accounts.AddAsync(account, cancellationToken);
+            _unitOfWork.Accounts.Add(account);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             await UpdateClientAccountsCacheAsync(command.ClientId, account, cancellationToken);

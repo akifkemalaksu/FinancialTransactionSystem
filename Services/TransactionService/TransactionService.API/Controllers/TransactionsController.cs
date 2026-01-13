@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ServiceDefaults.Controllers;
 using ServiceDefaults.Dtos.Responses;
+using ServiceDefaults.Enums;
 using ServiceDefaults.Interfaces;
 using TransactionService.Application.Features.TransferFeatures.CreateTransfer;
 
@@ -22,13 +23,18 @@ namespace TransactionService.API.Controllers
                 return BadRequest("Idempotency key is required.");
             }
 
+            var transactionType = !string.IsNullOrEmpty(request.DestinationAccountNumber)
+                ? TransactionType.Transfer
+                : (request.Type ?? TransactionType.Withdraw);
+
             var command = new CreateTransferCommand
             {
                 IdempotencyKey = idempotencyKey,
                 SourceAccountNumber = request.SourceAccountNumber,
                 DestinationAccountNumber = request.DestinationAccountNumber,
                 Amount = request.Amount,
-                Description = request.Description
+                Description = request.Description,
+                Type = transactionType
             };
 
             var result = await _commandDispatcher.DispatchAsync<CreateTransferCommand, ApiResponse<CreateTransferCommandResult>>(command);

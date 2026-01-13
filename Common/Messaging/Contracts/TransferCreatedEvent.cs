@@ -12,5 +12,6 @@ namespace Messaging.Contracts
         public required string Currency { get; init; }
         public DateTime TransactionDate { get; init; }
         public string? Description { get; init; }
+        public int Type { get; init; }
     }
 }

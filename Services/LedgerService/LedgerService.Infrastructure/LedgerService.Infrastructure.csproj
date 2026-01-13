@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\Messaging.Persistence\Messaging.Persistence.csproj" />
     <ProjectReference Include="..\LedgerService.Application\LedgerService.Application.csproj" />
   </ItemGroup>
 

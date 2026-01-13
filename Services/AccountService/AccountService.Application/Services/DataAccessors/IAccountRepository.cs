@@ -5,7 +5,7 @@ namespace AccountService.Application.Services.DataAccessors
 {
     public interface IAccountRepository
     {
-        Task AddAsync(Account account, CancellationToken cancellationToken = default);
+        void Add(Account account);
         Task<List<AccountDto>> GetAccountsByClientIdAsync(Guid clientId, CancellationToken cancellationToken = default);
         Task<AccountDto?> GetByIdAsync(Guid accountId, CancellationToken cancellationToken = default);
         Task<AccountDto?> GetByAccountNumberAsync(string accountNumber, CancellationToken cancellationToken = default);

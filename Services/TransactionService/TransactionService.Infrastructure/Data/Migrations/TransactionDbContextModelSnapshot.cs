@@ -114,6 +114,9 @@ namespace TransactionService.Infrastructure.Data.Migrations
                     b.Property<DateTime>("TransactionDate")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.ToTable("Transfers");

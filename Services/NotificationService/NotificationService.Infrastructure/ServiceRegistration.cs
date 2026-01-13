@@ -21,7 +21,7 @@ namespace NotificationService.Infrastructure
             builder.Services.AddNpgsql<NotificationDbContext>(builder.Configuration.GetConnectionString("DatabaseConnection"));
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            builder.AddMessagingBus<NotificationDbContext>(typeof(TransferCreatedHandler));
+            builder.AddMessagingBus<NotificationDbContext>(typeof(TransferCreatedEventHandler));
 
             CQRSServiceRegistrar.Register(builder.Services, typeof(CreateNotificationCommand));
         }

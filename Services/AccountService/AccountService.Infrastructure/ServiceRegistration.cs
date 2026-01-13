@@ -27,7 +27,7 @@ namespace AccountService.Infrastructure
             builder.Services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisConnection")));
             builder.Services.AddScoped<IDistributedCacheService, RedisCacheService>();
 
-            builder.AddMessagingBus<AccountDbContext>(typeof(TransferCreatedHandler));
+            builder.AddMessagingBus<AccountDbContext>(typeof(TransferCreatedEventHandler));
 
             CQRSServiceRegistrar.Register(builder.Services, typeof(GetAccountByIdQuery));
         }

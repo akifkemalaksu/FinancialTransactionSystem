@@ -10,10 +10,7 @@ namespace AccountService.Infrastructure.Services.DataAccessors
         AccountDbContext _dbContext
     ) : IAccountRepository
     {
-        public async Task AddAsync(Account account, CancellationToken cancellationToken = default)
-        {
-            await _dbContext.Accounts.AddAsync(account, cancellationToken);
-        }
+        public async void Add(Account account) => _dbContext.Accounts.Add(account);
 
         public async Task<List<AccountDto>> GetAccountsByClientIdAsync(Guid clientId, CancellationToken cancellationToken = default)
         {

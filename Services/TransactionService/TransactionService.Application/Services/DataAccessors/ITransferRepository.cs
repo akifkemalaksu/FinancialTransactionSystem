@@ -8,6 +8,6 @@ namespace TransactionService.Application.Services.DataAccessors
         Task<TransferDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
         Task<TransferDto?> GetByIdempotencyKeyAsync(string idempotencyKey, CancellationToken cancellationToken = default);
         Task<TransferHistoryDto> GetByAccountNumberAsync(string accountNumber, CancellationToken cancellationToken = default);
-        Task CreateAsync(Transfer transfer, CancellationToken cancellationToken = default);
+        void Add(Transfer transfer);
     }
 }

@@ -4,6 +4,6 @@ namespace Messaging.Contracts
 {
     public abstract record KafkaEvent : IEvent
     {
-        public Guid Key { get; init; } = Guid.NewGuid();
+        public Guid Id { get; init; } = Guid.NewGuid();
     }
 }

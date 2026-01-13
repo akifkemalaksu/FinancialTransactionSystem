@@ -8,10 +8,7 @@ namespace AccountService.Infrastructure.Services.DataAccessors
 {
     public class ClientRepository(AccountDbContext _context) : IClientRepository
     {
-        public async Task AddAsync(Client client, CancellationToken cancellationToken = default)
-        {
-            await _context.Clients.AddAsync(client, cancellationToken);
-        }
+        public async void Add(Client client) => _context.Clients.Add(client);
 
         public async Task<List<ClientDto>> GetAllAsync(CancellationToken cancellationToken = default)
         {

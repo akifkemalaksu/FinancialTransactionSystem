@@ -20,7 +20,7 @@ namespace AccountService.Application.Features.ClientFeatures.CreateClient
                 CreatedAt = DateTime.UtcNow
             };
 
-            await _unitOfWork.Clients.AddAsync(client, cancellationToken);
+            _unitOfWork.Clients.Add(client);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return ApiResponse<CreateClientCommandResult>.Success(

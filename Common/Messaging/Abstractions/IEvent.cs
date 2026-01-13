@@ -2,6 +2,6 @@
 {
     public interface IEvent
     {
-        Guid Key { get; }
+        Guid Id { get; }
     }
 }

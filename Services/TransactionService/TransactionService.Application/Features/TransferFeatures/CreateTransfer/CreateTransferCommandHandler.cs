@@ -2,6 +2,7 @@ using Messaging.Abstractions;
 using Messaging.Contracts;
 using Microsoft.AspNetCore.Http;
 using ServiceDefaults.Dtos.Responses;
+using ServiceDefaults.Enums;
 using ServiceDefaults.Interfaces;
 using TransactionService.Application.Dtos.Clients.Account;
 using TransactionService.Application.Dtos.Clients.FraudDetection;
@@ -45,7 +46,7 @@ namespace TransactionService.Application.Features.TransferFeatures.CreateTransfe
 
             var transfer = await CreateTransferAsync(command, currency, cancellationToken);
 
-            await PublishTransferEventAsync(transfer, cancellationToken);
+            await PublishTransferEventAsync(transfer, command.Type, cancellationToken);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
@@ -89,17 +90,9 @@ namespace TransactionService.Application.Features.TransferFeatures.CreateTransfe
 
             if (string.IsNullOrEmpty(command.DestinationAccountNumber))
             {
-                if (command.Amount == 0)
+                if (command.Type == TransactionType.Withdraw)
                 {
-                    return (ApiResponse<CreateTransferCommandResult>.Failure(
-                        StatusCodes.Status400BadRequest,
-                        "Amount cannot be zero"
-                    ), null);
-                }
-
-                if (command.Amount < 0)
-                {
-                    if (sourceAccount.Balance < Math.Abs(command.Amount))
+                    if (sourceAccount.Balance < command.Amount)
                     {
                         return (ApiResponse<CreateTransferCommandResult>.Failure(
                             StatusCodes.Status400BadRequest,
@@ -110,14 +103,6 @@ namespace TransactionService.Application.Features.TransferFeatures.CreateTransfe
             }
             else
             {
-                if (command.Amount <= 0)
-                {
-                    return (ApiResponse<CreateTransferCommandResult>.Failure(
-                        StatusCodes.Status400BadRequest,
-                        "Transfer amount must be positive"
-                    ), null);
-                }
-
                 if (sourceAccount.Balance < command.Amount)
                 {
                     return (ApiResponse<CreateTransferCommandResult>.Failure(
@@ -198,15 +183,16 @@ namespace TransactionService.Application.Features.TransferFeatures.CreateTransfe
                 TransactionDate = DateTime.UtcNow,
                 Status = TransactionStatusEnum.Pending,
                 Description = command.Description,
-                IdempotencyKey = command.IdempotencyKey
+                IdempotencyKey = command.IdempotencyKey,
+                Type = (int)command.Type
             };
 
-            await _unitOfWork.Transfers.CreateAsync(transfer, cancellationToken);
+            _unitOfWork.Transfers.Add(transfer);
 
             return transfer;
         }
 
-        private async Task PublishTransferEventAsync(Transfer transfer, CancellationToken cancellationToken)
+        private async Task PublishTransferEventAsync(Transfer transfer, TransactionType type, CancellationToken cancellationToken)
         {
             var eventMessage = new TransferCreatedEvent
             {
@@ -216,7 +202,8 @@ namespace TransactionService.Application.Features.TransferFeatures.CreateTransfe
                 Amount = transfer.Amount,
                 Currency = transfer.Currency,
                 TransactionDate = transfer.TransactionDate,
-                Description = transfer.Description
+                Description = transfer.Description,
+                Type = (int)type
             };
             await _kafkaProducer.ProduceAsync(eventMessage, cancellationToken);
         }

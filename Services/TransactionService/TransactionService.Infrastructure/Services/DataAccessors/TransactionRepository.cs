@@ -8,10 +8,7 @@ namespace TransactionService.Infrastructure.Services.DataAccessors
 {
     public class TransferRepository(TransactionDbContext _dbContext) : ITransferRepository
     {
-        public async Task CreateAsync(Transfer transfer, CancellationToken cancellationToken = default)
-        {
-            await _dbContext.Transfers.AddAsync(transfer, cancellationToken);
-        }
+        public void Add(Transfer transfer) => _dbContext.Transfers.Add(transfer);
 
         public async Task<TransferHistoryDto> GetByAccountNumberAsync(string accountNumber, CancellationToken cancellationToken = default)
         {

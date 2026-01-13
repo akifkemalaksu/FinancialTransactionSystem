@@ -13,7 +13,7 @@ namespace Messaging.Persistence.Infrastructure
         {
             var outboxMessage = new OutboxMessage
             {
-                Id = message.Key,
+                Id = message.Id,
                 Type = typeof(T).FullName,
                 Content = JsonSerializer.Serialize(message),
                 OccurredOnUtc = DateTime.UtcNow,

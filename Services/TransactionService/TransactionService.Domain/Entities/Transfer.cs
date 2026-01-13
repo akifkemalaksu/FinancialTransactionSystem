@@ -23,6 +23,8 @@ namespace TransactionService.Domain.Entities
 
         public TransactionStatusEnum Status { get; set; } = TransactionStatusEnum.Pending;
 
+        public int Type { get; set; }
+
         [StringLength(255)]
         public string? Description { get; set; }
 
