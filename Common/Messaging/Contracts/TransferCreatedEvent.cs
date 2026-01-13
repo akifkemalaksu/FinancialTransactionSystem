@@ -1,8 +1,9 @@
-using Messaging.Abstractions;
+using Messaging.Attributes;
 
 namespace Messaging.Contracts
 {
-    public record TransferCreatedEvent : IKeyedMessage
+    [KafkaTopic("transfer-created")]
+    public record TransferCreatedEvent : KafkaEvent
     {
         public Guid TransactionId { get; init; }
         public required string SourceAccountNumber { get; init; }
@@ -11,7 +12,5 @@ namespace Messaging.Contracts
         public required string Currency { get; init; }
         public DateTime TransactionDate { get; init; }
         public string? Description { get; init; }
-
-        public string Key => TransactionId.ToString();
     }
 }

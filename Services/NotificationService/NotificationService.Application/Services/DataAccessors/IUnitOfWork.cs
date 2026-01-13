@@ -1,6 +1,6 @@
 namespace NotificationService.Application.Services.DataAccessors
 {
-    public interface IUnitOfWork: IDisposable
+    public interface IUnitOfWork : IDisposable
     {
         INotificationRepository Notifications { get; }
 

@@ -3,7 +3,7 @@ using NotificationService.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.RegisterInfrastructureServices(builder.Configuration);
+builder.RegisterInfrastructureServices();
 
 builder.Services.AddControllers();
 

@@ -1,8 +1,8 @@
+using AccountService.Application.Dtos.Accounts;
 using AccountService.Application.Services.DataAccessors;
+using AccountService.Domain.Entities;
 using AccountService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using AccountService.Application.Dtos.Accounts;
-using AccountService.Domain.Entities;
 
 namespace AccountService.Infrastructure.Services.DataAccessors
 {

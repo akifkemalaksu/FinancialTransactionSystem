@@ -1,10 +1,10 @@
+using AccountService.Application.Dtos.Accounts;
 using AccountService.Application.Services.DataAccessors;
 using AccountService.Application.Services.InfrastructureServices;
 using AccountService.Domain.Constants;
 using Microsoft.AspNetCore.Http;
 using ServiceDefaults.Dtos.Responses;
 using ServiceDefaults.Interfaces;
-using AccountService.Application.Dtos.Accounts;
 
 namespace AccountService.Application.Features.AccountFeatures.GetAccountsByClientId
 {

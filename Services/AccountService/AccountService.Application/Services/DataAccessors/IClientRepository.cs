@@ -1,5 +1,5 @@
-using AccountService.Domain.Entities;
 using AccountService.Application.Dtos.Clients;
+using AccountService.Domain.Entities;
 
 namespace AccountService.Application.Services.DataAccessors
 {

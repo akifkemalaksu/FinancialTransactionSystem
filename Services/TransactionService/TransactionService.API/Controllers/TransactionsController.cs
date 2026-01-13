@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using ServiceDefaults.Controllers;
+using ServiceDefaults.Dtos.Responses;
 using ServiceDefaults.Interfaces;
 using TransactionService.Application.Features.TransferFeatures.CreateTransfer;
-using ServiceDefaults.Dtos.Responses;
 
 namespace TransactionService.API.Controllers
 {
@@ -32,7 +32,7 @@ namespace TransactionService.API.Controllers
             };
 
             var result = await _commandDispatcher.DispatchAsync<CreateTransferCommand, ApiResponse<CreateTransferCommandResult>>(command);
-            
+
             return CreateResult(result);
         }
     }

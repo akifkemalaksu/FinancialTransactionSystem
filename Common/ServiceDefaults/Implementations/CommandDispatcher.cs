@@ -9,7 +9,7 @@ namespace ServiceDefaults.Implementations
     {
         public Task<TCommandResult> DispatchAsync<TCommand, TCommandResult>(TCommand command, CancellationToken cancellationToken = default)
         {
-            var handler = _serviceProvider.GetService<ICommandHandler<TCommand, TCommandResult>>() 
+            var handler = _serviceProvider.GetService<ICommandHandler<TCommand, TCommandResult>>()
                 ?? throw new InvalidOperationException($"No command handler registered for command type {typeof(TCommand).FullName} and result type {typeof(TCommandResult).FullName}");
             return handler.HandleAsync(command, cancellationToken);
         }

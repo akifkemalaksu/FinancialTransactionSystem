@@ -16,7 +16,7 @@ namespace TransactionService.Application.Features.TransferFeatures.CreateTransfe
         IUnitOfWork _unitOfWork,
         IAccountService _accountService,
         IFraudDetectionService _fraudDetectionService,
-        IMessageBus _messageBus
+        IKafkaProducer _kafkaProducer
     ) : ICommandHandler<CreateTransferCommand, ApiResponse<CreateTransferCommandResult>>
     {
         public async Task<ApiResponse<CreateTransferCommandResult>> HandleAsync(CreateTransferCommand command, CancellationToken cancellationToken = default)
@@ -26,7 +26,7 @@ namespace TransactionService.Application.Features.TransferFeatures.CreateTransfe
 
             var (sourceValidationResult, sourceAccount) = await ValidateAndGetSourceAccountAsync(command, cancellationToken);
             if (sourceValidationResult is not null) return sourceValidationResult;
-            
+
             if (sourceAccount is null)
             {
                 return ApiResponse<CreateTransferCommandResult>.Failure(
@@ -153,11 +153,11 @@ namespace TransactionService.Application.Features.TransferFeatures.CreateTransfe
 
         private async Task<ApiResponse<CreateTransferCommandResult>?> ValidateDestinationAccountAsync(CreateTransferCommand command, string currency, CancellationToken cancellationToken)
         {
-            if(string.IsNullOrEmpty(command.DestinationAccountNumber))
+            if (string.IsNullOrEmpty(command.DestinationAccountNumber))
             {
                 return null;
             }
-            
+
             if (command.SourceAccountNumber == command.DestinationAccountNumber)
             {
                 return ApiResponse<CreateTransferCommandResult>.Failure(
@@ -218,7 +218,7 @@ namespace TransactionService.Application.Features.TransferFeatures.CreateTransfe
                 TransactionDate = transfer.TransactionDate,
                 Description = transfer.Description
             };
-            await _messageBus.PublishAsync(eventMessage, cancellationToken);
+            await _kafkaProducer.ProduceAsync(eventMessage, cancellationToken);
         }
     }
 }

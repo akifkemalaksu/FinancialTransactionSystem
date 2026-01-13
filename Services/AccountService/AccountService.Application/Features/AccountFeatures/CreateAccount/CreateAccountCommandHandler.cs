@@ -17,7 +17,7 @@ namespace AccountService.Application.Features.AccountFeatures.CreateAccount
         public async Task<ApiResponse<CreateAccountCommandResult>> HandleAsync(CreateAccountCommand command, CancellationToken cancellationToken = default)
         {
             var client = await _unitOfWork.Clients.GetByIdAsync(command.ClientId, cancellationToken);
-            if(client is null)
+            if (client is null)
             {
                 return ApiResponse<CreateAccountCommandResult>.Failure(
                     StatusCodes.Status404NotFound,

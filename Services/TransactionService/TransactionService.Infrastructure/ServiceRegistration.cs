@@ -1,9 +1,9 @@
-using MassTransit;
-using Messaging.Extensions;
+using Messaging.Persistence.Extensions;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using ServiceDefaults.IoC;
+using ServiceDefaults.Extensions;
 using TransactionService.Application.Features.TransferFeatures.CreateTransfer;
 using TransactionService.Application.Services.Clients;
 using TransactionService.Application.Services.DataAccessors;
@@ -15,31 +15,28 @@ namespace TransactionService.Infrastructure
 {
     public static class ServiceRegistration
     {
-        public static void RegisterInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
+        public static void RegisterInfrastructureServices(this WebApplicationBuilder builder)
         {
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-            services.AddNpgsql<TransactionDbContext>(configuration.GetConnectionString("DatabaseConnection"));
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddNpgsql<TransactionDbContext>(builder.Configuration.GetConnectionString("DatabaseConnection"));
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            services.AddMessagingBus<TransactionDbContext>(configuration, config =>
+            builder.AddMessagingBus<TransactionDbContext>(typeof(CreateTransferCommand));
+
+            builder.Services.AddScoped<IAccountService, AccountService>();
+            builder.Services.AddScoped<IFraudDetectionService, FraudDetectionService>();
+
+            builder.Services.AddHttpClient(nameof(AccountService), conf =>
             {
-                config.UsePostgres();
+                conf.BaseAddress = new Uri(builder.Configuration["Services:AccountService:BaseUrl"]!);
+            });
+            builder.Services.AddHttpClient(nameof(FraudDetectionService), conf =>
+            {
+                conf.BaseAddress = new Uri(builder.Configuration[$"Services:FraudDetectionService:BaseUrl"]!);
             });
 
-            services.AddScoped<IAccountService, AccountService>();
-            services.AddScoped<IFraudDetectionService, FraudDetectionService>();
-
-            services.AddHttpClient(nameof(AccountService), conf =>
-            {
-                conf.BaseAddress = new Uri(configuration["Services:AccountService:BaseUrl"]!);
-            });
-            services.AddHttpClient(nameof(FraudDetectionService), conf =>
-            {
-                conf.BaseAddress = new Uri(configuration[$"Services:FraudDetectionService:BaseUrl"]!);
-            });
-
-            CQRSServiceRegistrar.Register(services, typeof(CreateTransferCommand));
+            CQRSServiceRegistrar.Register(builder.Services, typeof(CreateTransferCommand));
         }
     }
 }

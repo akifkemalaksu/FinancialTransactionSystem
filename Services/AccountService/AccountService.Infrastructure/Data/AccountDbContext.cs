@@ -1,5 +1,5 @@
 ﻿using AccountService.Domain.Entities;
-using MassTransit;
+using Messaging.Persistence.EntityConfigurations;
 using Microsoft.EntityFrameworkCore;
 
 namespace AccountService.Infrastructure.Data
@@ -10,16 +10,14 @@ namespace AccountService.Infrastructure.Data
             : base(options)
         {
         }
-        
+
         public DbSet<Account> Accounts { get; set; }
 
         public DbSet<Client> Clients { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.AddInboxStateEntity();
-            modelBuilder.AddOutboxMessageEntity();
-            modelBuilder.AddOutboxStateEntity();
+            modelBuilder.ApplyMessagingConfiguration();
 
             base.OnModelCreating(modelBuilder);
         }

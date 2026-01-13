@@ -1,4 +1,4 @@
-using MassTransit;
+using Messaging.Persistence.EntityConfigurations;
 using Microsoft.EntityFrameworkCore;
 using NotificationService.Domain.Entities;
 
@@ -14,9 +14,7 @@ namespace NotificationService.Infrastructure.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.AddInboxStateEntity();
-            modelBuilder.AddOutboxMessageEntity();
-            modelBuilder.AddOutboxStateEntity();
+            modelBuilder.ApplyMessagingConfiguration();
 
             base.OnModelCreating(modelBuilder);
         }

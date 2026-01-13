@@ -16,6 +16,6 @@ namespace AccountService.Infrastructure.Services.DataAccessors
         public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) => _context.SaveChangesAsync(cancellationToken);
 
         public void Dispose() => _context.Dispose();
-        
+
     }
 }

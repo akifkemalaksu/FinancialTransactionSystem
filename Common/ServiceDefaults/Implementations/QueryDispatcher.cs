@@ -9,7 +9,7 @@ namespace ServiceDefaults.Implementations
     {
         public Task<TQueryResult> DispatchAsync<TQuery, TQueryResult>(TQuery query, CancellationToken cancellationToken = default)
         {
-            var handler = _serviceProvider.GetService<IQueryHandler<TQuery, TQueryResult>>() 
+            var handler = _serviceProvider.GetService<IQueryHandler<TQuery, TQueryResult>>()
                 ?? throw new InvalidOperationException($"No query handler registered for query type {typeof(TQuery).FullName} and result type {typeof(TQueryResult).FullName}");
             return handler.HandleAsync(query, cancellationToken);
         }

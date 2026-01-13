@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Text;
 using System.Text.Json;
-using System.Xml.Serialization;
 using TransactionService.Domain.Constants;
 
 namespace TransactionService.Infrastructure.Services.Clients
@@ -102,7 +101,7 @@ namespace TransactionService.Infrastructure.Services.Clients
             Dictionary<string, string>? headers)
         {
             var request = new HttpRequestMessage(method, url);
-            
+
             if (headers != null)
             {
                 foreach (var header in headers)

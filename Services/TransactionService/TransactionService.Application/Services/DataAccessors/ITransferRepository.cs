@@ -1,5 +1,5 @@
-using TransactionService.Domain.Entities;
 using TransactionService.Application.Dtos.Transfers;
+using TransactionService.Domain.Entities;
 
 namespace TransactionService.Application.Services.DataAccessors
 {

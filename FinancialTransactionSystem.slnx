@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/Common/">
+    <Project Path="Common/Messaging.Persistence/Messaging.Persistence.csproj" Id="ceefd7b6-c9bb-4420-b1c6-8153a11c5dc2" />
     <Project Path="Common/Messaging/Messaging.csproj" Id="53c1779d-2a52-432b-9154-a3e30ea67c47" />
     <Project Path="Common/ServiceDefaults/ServiceDefaults.csproj" Id="fdcc180e-cbd1-4ed4-9064-efc13f8ff0db" />
   </Folder>

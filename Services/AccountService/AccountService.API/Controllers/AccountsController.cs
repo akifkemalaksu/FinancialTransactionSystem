@@ -1,7 +1,6 @@
 using AccountService.Application.Features.AccountFeatures.CreateAccount;
 using AccountService.Application.Features.AccountFeatures.GetAccountById;
 using AccountService.Application.Features.AccountFeatures.GetAccountByNumber;
-using AccountService.Application.Features.AccountFeatures.GetAccountsByClientId;
 using Microsoft.AspNetCore.Mvc;
 using ServiceDefaults.Controllers;
 using ServiceDefaults.Dtos.Responses;

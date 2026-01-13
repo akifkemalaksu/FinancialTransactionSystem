@@ -19,7 +19,7 @@ namespace FraudDetectionService.Application.Features.FraudCheck
                     }
                 ));
             }
-            
+
             return Task.FromResult(ApiResponse<CheckFraudQueryResult>.Success(
                 StatusCodes.Status200OK,
                 new CheckFraudQueryResult

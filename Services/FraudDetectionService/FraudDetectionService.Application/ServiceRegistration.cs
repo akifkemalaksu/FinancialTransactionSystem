@@ -1,6 +1,6 @@
 using FraudDetectionService.Application.Features.FraudCheck;
 using Microsoft.Extensions.DependencyInjection;
-using ServiceDefaults.IoC;
+using ServiceDefaults.Extensions;
 
 namespace FraudDetectionService.Application
 {

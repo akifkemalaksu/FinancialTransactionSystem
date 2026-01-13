@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
+using TransactionService.Application.Dtos.Transfers;
 using TransactionService.Application.Services.DataAccessors;
 using TransactionService.Domain.Entities;
 using TransactionService.Infrastructure.Data;
-using TransactionService.Application.Dtos.Transfers;
 
 namespace TransactionService.Infrastructure.Services.DataAccessors
 {

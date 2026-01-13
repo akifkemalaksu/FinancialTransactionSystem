@@ -13,7 +13,7 @@ namespace AccountService.Application.Features.AccountFeatures.GetAccountById
         {
             var account = await _unitOfWork.Accounts.GetByIdAsync(query.AccountId, cancellationToken);
 
-            if(account is null)
+            if (account is null)
                 return ApiResponse<GetAccountByIdQueryResult>.Failure(StatusCodes.Status404NotFound, $"Account with id {query.AccountId} not found");
 
             var result = new GetAccountByIdQueryResult() { Account = account };

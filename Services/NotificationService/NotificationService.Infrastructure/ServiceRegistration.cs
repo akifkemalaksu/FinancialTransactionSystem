@@ -1,30 +1,29 @@
-using MassTransit;
-using Messaging.Extensions;
+using Messaging.Persistence.Extensions;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NotificationService.Application.EventHandlers;
 using NotificationService.Application.Features.NotificationFeatures.CreateNotification;
 using NotificationService.Application.Services.DataAccessors;
 using NotificationService.Infrastructure.Data;
 using NotificationService.Infrastructure.Services.DataAccessors;
-using ServiceDefaults.IoC;
+using ServiceDefaults.Extensions;
 
 namespace NotificationService.Infrastructure
 {
     public static class ServiceRegistration
     {
-        public static void RegisterInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
+        public static void RegisterInfrastructureServices(this WebApplicationBuilder builder)
         {
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-            services.AddNpgsql<NotificationDbContext>(configuration.GetConnectionString("DatabaseConnection"));
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddNpgsql<NotificationDbContext>(builder.Configuration.GetConnectionString("DatabaseConnection"));
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            services.AddMessagingBus<NotificationDbContext>(configuration, config => {
-                config.UsePostgres();
-            });
+            builder.AddMessagingBus<NotificationDbContext>(typeof(TransferCreatedHandler));
 
-            CQRSServiceRegistrar.Register(services, typeof(CreateNotificationCommand));
+            CQRSServiceRegistrar.Register(builder.Services, typeof(CreateNotificationCommand));
         }
     }
 }
