@@ -12,11 +12,24 @@ namespace NotificationService.API.Consumers
     {
         public async Task Consume(ConsumeContext<TransferCreatedEvent> context)
         {
-            var command = new CreateNotificationCommand
+            CreateNotificationCommand command;
+
+            if (string.IsNullOrEmpty(context.Message.DestinationAccountNumber))
             {
-                Title = "Transfer Successful",
-                Message = $"From {context.Message.SourceAccountNumber} to {context.Message.DestinationAccountNumber} {context.Message.Amount} {context.Message.Currency} sent."
-            };
+                command = new CreateNotificationCommand
+                {
+                    Title = "Balance Update",
+                    Message = $"{Math.Abs(context.Message.Amount)} {context.Message.Currency} transaction processed for account {context.Message.SourceAccountNumber}. {context.Message.Description}"
+                };
+            }
+            else
+            {
+                command = new CreateNotificationCommand
+                {
+                    Title = "Transfer Successful",
+                    Message = $"From {context.Message.SourceAccountNumber} to {context.Message.DestinationAccountNumber} {context.Message.Amount} {context.Message.Currency} sent."
+                };
+            }
 
             await _commandDispatcher.DispatchAsync<CreateNotificationCommand, ApiResponse<CreateNotificationCommandResult>>(command, context.CancellationToken);
         }

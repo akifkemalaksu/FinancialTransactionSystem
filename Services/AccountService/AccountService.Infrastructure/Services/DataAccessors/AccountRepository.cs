@@ -2,6 +2,7 @@ using AccountService.Application.Services.DataAccessors;
 using AccountService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using AccountService.Application.Dtos.Accounts;
+using AccountService.Domain.Entities;
 
 namespace AccountService.Infrastructure.Services.DataAccessors
 {
@@ -9,6 +10,11 @@ namespace AccountService.Infrastructure.Services.DataAccessors
         AccountDbContext _dbContext
     ) : IAccountRepository
     {
+        public async Task AddAsync(Account account, CancellationToken cancellationToken = default)
+        {
+            await _dbContext.Accounts.AddAsync(account, cancellationToken);
+        }
+
         public async Task<List<AccountDto>> GetAccountsByClientIdAsync(Guid clientId, CancellationToken cancellationToken = default)
         {
             var accounts = await _dbContext.Accounts
@@ -61,6 +67,12 @@ namespace AccountService.Infrastructure.Services.DataAccessors
                 .FirstOrDefaultAsync(cancellationToken);
 
             return account;
+        }
+
+        public async Task<Account?> GetEntityByAccountNumberAsync(string accountNumber, CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.Accounts
+                .FirstOrDefaultAsync(a => a.AccountNumber == accountNumber, cancellationToken);
         }
     }
 }

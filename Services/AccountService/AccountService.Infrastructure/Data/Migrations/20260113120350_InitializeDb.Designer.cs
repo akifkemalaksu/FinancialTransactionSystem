@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AccountService.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AccountDbContext))]
-    [Migration("20260112211523_InitializeDb")]
+    [Migration("20260113120350_InitializeDb")]
     partial class InitializeDb
     {
         /// <inheritdoc />
@@ -33,8 +33,8 @@ namespace AccountService.Infrastructure.Data.Migrations
 
                     b.Property<string>("AccountNumber")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<decimal>("Balance")
                         .HasColumnType("numeric");

@@ -8,11 +8,11 @@ namespace TransactionService.Domain.Entities
         [Key]
         public Guid Id { get; set; }
 
-        [StringLength(20)]
+        [StringLength(50)]
         public required string SourceAccountNumber { get; set; }
 
-        [StringLength(20)]
-        public required string DestinationAccountNumber { get; set; }
+        [StringLength(50)]
+        public string? DestinationAccountNumber { get; set; }
 
         public decimal Amount { get; set; }
 

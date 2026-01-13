@@ -10,7 +10,7 @@ namespace AccountService.Domain.Entities
 
         public Guid ClientId { get; set; }
 
-        [StringLength(100)]
+        [StringLength(50)]
         public required string AccountNumber { get; set; }
 
         [StringLength(3)]

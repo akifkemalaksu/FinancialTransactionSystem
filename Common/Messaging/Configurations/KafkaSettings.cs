@@ -1,4 +1,4 @@
-﻿namespace Messaging.Configurations
+namespace Messaging.Configurations
 {
     public record KafkaSettings
     {

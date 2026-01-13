@@ -209,9 +209,8 @@ namespace TransactionService.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(255)");
 
                     b.Property<string>("DestinationAccountNumber")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("IdempotencyKey")
                         .HasMaxLength(255)
@@ -219,8 +218,8 @@ namespace TransactionService.Infrastructure.Data.Migrations
 
                     b.Property<string>("SourceAccountNumber")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");

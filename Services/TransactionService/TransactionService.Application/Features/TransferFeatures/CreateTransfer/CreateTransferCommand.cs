@@ -6,7 +6,7 @@ namespace TransactionService.Application.Features.TransferFeatures.CreateTransfe
     {
         public required string SourceAccountNumber { get; init; }
 
-        public required string DestinationAccountNumber { get; init; }
+        public string? DestinationAccountNumber { get; init; }
 
         public decimal Amount { get; init; }
 

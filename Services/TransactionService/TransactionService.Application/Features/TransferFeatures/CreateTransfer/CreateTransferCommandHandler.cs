@@ -43,9 +43,11 @@ namespace TransactionService.Application.Features.TransferFeatures.CreateTransfe
             var destinationValidationResult = await ValidateDestinationAccountAsync(command, currency, cancellationToken);
             if (destinationValidationResult is not null) return destinationValidationResult;
 
-            var transfer = await CreateAndSaveTransferAsync(command, currency, cancellationToken);
+            var transfer = await CreateTransferAsync(command, currency, cancellationToken);
 
             await PublishTransferEventAsync(transfer, cancellationToken);
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return ApiResponse<CreateTransferCommandResult>.Success(
                 StatusCodes.Status201Created,
@@ -85,12 +87,44 @@ namespace TransactionService.Application.Features.TransferFeatures.CreateTransfe
                 ), null);
             }
 
-            if (sourceAccount.Balance < command.Amount)
+            if (string.IsNullOrEmpty(command.DestinationAccountNumber))
             {
-                return (ApiResponse<CreateTransferCommandResult>.Failure(
-                    StatusCodes.Status400BadRequest,
-                    "Insufficient funds"
-                ), null);
+                if (command.Amount == 0)
+                {
+                    return (ApiResponse<CreateTransferCommandResult>.Failure(
+                        StatusCodes.Status400BadRequest,
+                        "Amount cannot be zero"
+                    ), null);
+                }
+
+                if (command.Amount < 0)
+                {
+                    if (sourceAccount.Balance < Math.Abs(command.Amount))
+                    {
+                        return (ApiResponse<CreateTransferCommandResult>.Failure(
+                            StatusCodes.Status400BadRequest,
+                            "Insufficient funds for withdrawal"
+                        ), null);
+                    }
+                }
+            }
+            else
+            {
+                if (command.Amount <= 0)
+                {
+                    return (ApiResponse<CreateTransferCommandResult>.Failure(
+                        StatusCodes.Status400BadRequest,
+                        "Transfer amount must be positive"
+                    ), null);
+                }
+
+                if (sourceAccount.Balance < command.Amount)
+                {
+                    return (ApiResponse<CreateTransferCommandResult>.Failure(
+                        StatusCodes.Status400BadRequest,
+                        "Insufficient funds"
+                    ), null);
+                }
             }
 
             return (null, sourceAccount);
@@ -119,6 +153,11 @@ namespace TransactionService.Application.Features.TransferFeatures.CreateTransfe
 
         private async Task<ApiResponse<CreateTransferCommandResult>?> ValidateDestinationAccountAsync(CreateTransferCommand command, string currency, CancellationToken cancellationToken)
         {
+            if(string.IsNullOrEmpty(command.DestinationAccountNumber))
+            {
+                return null;
+            }
+            
             if (command.SourceAccountNumber == command.DestinationAccountNumber)
             {
                 return ApiResponse<CreateTransferCommandResult>.Failure(
@@ -147,7 +186,7 @@ namespace TransactionService.Application.Features.TransferFeatures.CreateTransfe
             return null;
         }
 
-        private async Task<Transfer> CreateAndSaveTransferAsync(CreateTransferCommand command, string currency, CancellationToken cancellationToken)
+        private async Task<Transfer> CreateTransferAsync(CreateTransferCommand command, string currency, CancellationToken cancellationToken)
         {
             var transfer = new Transfer
             {
@@ -163,7 +202,6 @@ namespace TransactionService.Application.Features.TransferFeatures.CreateTransfe
             };
 
             await _unitOfWork.Transfers.CreateAsync(transfer, cancellationToken);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return transfer;
         }

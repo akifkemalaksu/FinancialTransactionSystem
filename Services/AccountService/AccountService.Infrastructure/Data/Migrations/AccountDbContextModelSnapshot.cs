@@ -30,8 +30,8 @@ namespace AccountService.Infrastructure.Data.Migrations
 
                     b.Property<string>("AccountNumber")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<decimal>("Balance")
                         .HasColumnType("numeric");

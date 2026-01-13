@@ -1,4 +1,5 @@
 using AccountService.Application.Features.AccountFeatures.GetAccountById;
+using AccountService.Application.Features.AccountFeatures.UpdateAccountBalance;
 using AccountService.Application.Services.DataAccessors;
 using AccountService.Application.Services.InfrastructureServices;
 using AccountService.Infrastructure.Data;

@@ -13,80 +13,106 @@ namespace Messaging.Extensions
 {
     public static class MessagingExtensions
     {
-        public static IServiceCollection AddMessagingBus<TContext>(
+        public static IServiceCollection AddMessagingBus<TDbContext>(
             this IServiceCollection services,
             IConfiguration configuration,
             Action<IEntityFrameworkOutboxConfigurator>? configureOutbox = null
         )
-            where TContext : DbContext
+            where TDbContext : DbContext
         {
-            var settings = configuration.GetRequiredSection(nameof(KafkaSettings)).Get<KafkaSettings>()!;
+            var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly();
+
+            var kafkaSettings = configuration.GetRequiredSection(nameof(KafkaSettings)).Get<KafkaSettings>()!;
+
+            var consumerTypes = assembly.GetTypes()
+                .Where(t => t.IsClass && !t.IsAbstract &&
+                       t.GetInterfaces().Any(i => i.IsGenericType &&
+                       i.GetGenericTypeDefinition() == typeof(IConsumer<>)))
+                .ToList();
 
             services.AddMassTransit(x =>
             {
-                x.AddEntityFrameworkOutbox<TContext>(o =>
+                x.AddEntityFrameworkOutbox<TDbContext>(o =>
                 {
                     configureOutbox?.Invoke(o);
                     o.UseBusOutbox();
-                    o.QueryDelay = TimeSpan.FromSeconds(1);
                 });
 
-                x.UsingInMemory((context, cfg) => cfg.ConfigureEndpoints(context));
+                foreach (var type in consumerTypes)
+                {
+                    x.AddConsumer(type);
+                }
 
                 x.AddRider(rider =>
                 {
-                    var entryAssembly = Assembly.GetEntryAssembly();
-                    if (entryAssembly != null)
+                    foreach (var type in consumerTypes)
                     {
-                        rider.AddConsumers(entryAssembly);
+                        rider.AddConsumer(type);
                     }
 
                     rider.UsingKafka((context, k) =>
                     {
-                        k.Host(settings.Host);
+                        k.Host(kafkaSettings.Host);
 
-                        k.Acks = Confluent.Kafka.Acks.Leader;
+                        var configureKafkaTopicEndpointMethod = typeof(MessagingExtensions)
+                            .GetMethod(nameof(ConfigureKafkaTopicEndpoint), BindingFlags.NonPublic | BindingFlags.Static);
 
-                        var consumerTypes = entryAssembly?
-                            .GetTypes()
-                            .Where(t => typeof(IConsumer).IsAssignableFrom(t) && !t.IsAbstract) ?? Enumerable.Empty<Type>();
+                        var consumerTypes = assembly.GetTypes()
+                        .Where(t => 
+                            t.IsClass && 
+                            !t.IsAbstract &&
+                            t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IConsumer<>))
+                        );
 
-                        foreach (var consumerType in consumerTypes)
+                        string groupId = kafkaSettings.GroupId;
+                        foreach (var type in consumerTypes)
                         {
-                            var topicName = $"{consumerType.Name.Replace("Consumer", "").ToLower()}-topic";
+                            var messageType = type.GetInterfaces()
+                                .First(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IConsumer<>))
+                                .GetGenericArguments()[0];
 
-                            k.TopicEndpoint<string, dynamic>(topicName, settings.GroupId, e =>
-                            {
-                                e.UseEntityFrameworkOutbox<TContext>(context);
-                                e.ConfigureConsumer(context, consumerType);
-                            });
+                            var entityNameAttribute = messageType.GetCustomAttribute<EntityNameAttribute>();
+                            var topicName = entityNameAttribute?.EntityName ?? messageType.Name.ToLower();
+
+                            if (configureKafkaTopicEndpointMethod is null)
+                                throw new InvalidOperationException($"{nameof(ConfigureKafkaTopicEndpoint)} not found.");
+
+                            var genericConfigureMethod = configureKafkaTopicEndpointMethod.MakeGenericMethod(typeof(TDbContext), messageType);
+
+                            genericConfigureMethod.Invoke(
+                                null,
+                                [context, k, topicName, groupId, type]
+                            );
                         }
                     });
+                });
 
-                    var contractTypes = Assembly.GetExecutingAssembly()
-                        .GetTypes()
-                        .Where(t => t.IsInterface && t.Namespace != null && t.Namespace.Contains("Contracts"));
-
-                    foreach (var type in contractTypes)
-                    {
-                        var topicName = $"{type.Name.Substring(1).ToLower()}-topic";
-
-                        var method = typeof(KafkaProducerRegistrationExtensions)
-                            .GetMethods()
-                            .FirstOrDefault(m => m.Name == "AddProducer" && m.GetGenericArguments().Length == 2);
-
-                        if (method != null)
-                        {
-                            var genericMethod = method.MakeGenericMethod(typeof(string), type);
-                            genericMethod.Invoke(null, [rider, topicName, null, null]);
-                        }
-                    }
+                x.UsingInMemory((context, cfg) =>
+                {
+                    cfg.ConfigureEndpoints(context);
                 });
             });
 
             services.AddScoped<IMessageBus, MessageBus>();
 
             return services;
+        }
+
+        private static void ConfigureKafkaTopicEndpoint<TDbContext, TMessage>(
+            IRiderRegistrationContext context,
+            IKafkaFactoryConfigurator kafka,
+            string topicName,
+            string groupId,
+            Type consumerType
+        )
+            where TDbContext : DbContext
+            where TMessage : class
+        {
+            kafka.TopicEndpoint<string, TMessage>(topicName, groupId, e =>
+            {
+                e.UseEntityFrameworkOutbox<TDbContext>(context);
+                e.ConfigureConsumer(context, consumerType);
+            });
         }
     }
 }

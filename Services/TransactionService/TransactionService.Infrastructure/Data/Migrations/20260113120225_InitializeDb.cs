@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace AccountService.Infrastructure.Data.Migrations
+namespace TransactionService.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
     public partial class InitializeDb : Migration
@@ -12,21 +12,6 @@ namespace AccountService.Infrastructure.Data.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "Clients",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Surname = table.Column<string>(type: "text", nullable: false),
-                    Email = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Clients", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "InboxState",
                 columns: table => new
@@ -67,25 +52,22 @@ namespace AccountService.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Accounts",
+                name: "Transfers",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    ClientId = table.Column<Guid>(type: "uuid", nullable: false),
-                    AccountNumber = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    SourceAccountNumber = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    DestinationAccountNumber = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    Amount = table.Column<decimal>(type: "numeric", nullable: false),
                     Currency = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: false),
-                    Balance = table.Column<decimal>(type: "numeric", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                    TransactionDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    Description = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    IdempotencyKey = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Accounts", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Accounts_Clients_ClientId",
-                        column: x => x.ClientId,
-                        principalTable: "Clients",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                    table.PrimaryKey("PK_Transfers", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -131,11 +113,6 @@ namespace AccountService.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Accounts_ClientId",
-                table: "Accounts",
-                column: "ClientId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_InboxState_Delivered",
                 table: "InboxState",
                 column: "Delivered");
@@ -172,13 +149,10 @@ namespace AccountService.Infrastructure.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Accounts");
-
-            migrationBuilder.DropTable(
                 name: "OutboxMessage");
 
             migrationBuilder.DropTable(
-                name: "Clients");
+                name: "Transfers");
 
             migrationBuilder.DropTable(
                 name: "InboxState");

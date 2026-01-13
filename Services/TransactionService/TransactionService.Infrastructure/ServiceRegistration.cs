@@ -22,12 +22,22 @@ namespace TransactionService.Infrastructure
             services.AddNpgsql<TransactionDbContext>(configuration.GetConnectionString("DatabaseConnection"));
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            services.AddMessagingBus<TransactionDbContext>(configuration, config => {
+            services.AddMessagingBus<TransactionDbContext>(configuration, config =>
+            {
                 config.UsePostgres();
             });
 
-            services.AddHttpClient<IAccountService, AccountService>(nameof(AccountService));
-            services.AddHttpClient<IFraudDetectionService, FraudDetectionService>(nameof(FraudDetectionService));
+            services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IFraudDetectionService, FraudDetectionService>();
+
+            services.AddHttpClient(nameof(AccountService), conf =>
+            {
+                conf.BaseAddress = new Uri(configuration["Services:AccountService:BaseUrl"]!);
+            });
+            services.AddHttpClient(nameof(FraudDetectionService), conf =>
+            {
+                conf.BaseAddress = new Uri(configuration[$"Services:FraudDetectionService:BaseUrl"]!);
+            });
 
             CQRSServiceRegistrar.Register(services, typeof(CreateTransferCommand));
         }

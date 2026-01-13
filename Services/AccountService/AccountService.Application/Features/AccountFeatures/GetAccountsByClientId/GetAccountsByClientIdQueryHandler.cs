@@ -15,7 +15,7 @@ namespace AccountService.Application.Features.AccountFeatures.GetAccountsByClien
     {
         public async Task<ApiResponse<GetAccountsByClientIdQueryResult>> HandleAsync(GetAccountsByClientIdQuery query, CancellationToken cancellationToken = default)
         {
-            var cacheName = string.Format(RedisCacheNames.GetAccountsByClientId, query.ClientId);
+            var cacheName = string.Format(DistributedCacheNames.GetAccountsByClientId, query.ClientId);
 
             var exists = await _distributedCacheService.ExistsAsync(cacheName);
             if (exists)
@@ -33,7 +33,7 @@ namespace AccountService.Application.Features.AccountFeatures.GetAccountsByClien
             var accounts = await _unitOfWork.Accounts.GetAccountsByClientIdAsync(query.ClientId, cancellationToken);
 
             if (accounts is null || accounts.Count == 0)
-                return ApiResponse<GetAccountsByClientIdQueryResult>.Failure(StatusCodes.Status404NotFound, $"Accounts with client id {query.ClientId} not found");
+                return ApiResponse<GetAccountsByClientIdQueryResult>.Success(StatusCodes.Status200OK, $"Accounts with client id {query.ClientId} not found");
 
             await _distributedCacheService.SetAsync(cacheName, accounts, TimeSpan.FromMinutes(5));
 

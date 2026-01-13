@@ -147,13 +147,5 @@ namespace TransactionService.Infrastructure.Services.Clients
 
             throw new NotSupportedException("Unknown content type for deserialization.");
         }
-
-        private static string SerializeToXml<T>(T obj)
-        {
-            using var sw = new StringWriter();
-            var serializer = new XmlSerializer(typeof(T));
-            serializer.Serialize(sw, obj);
-            return sw.ToString();
-        }
     }
 }
