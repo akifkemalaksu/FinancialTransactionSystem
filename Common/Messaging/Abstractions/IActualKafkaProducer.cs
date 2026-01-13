@@ -2,6 +2,6 @@
 {
     public interface IActualKafkaProducer
     {
-        Task PublishToKafkaAsync(string topic, string content, CancellationToken cancellationToken);
+        Task PublishToKafkaAsync(string topic, string key, string content, CancellationToken cancellationToken);
     }
 }

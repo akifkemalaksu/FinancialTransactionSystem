@@ -56,7 +56,7 @@ namespace Messaging.Persistence.BackgroundServices
                                     throw new Exception($"KafkaTopicAttribute not found on type '{msgType.Name}'.");
                                 }
 
-                                await actualProducer.PublishToKafkaAsync(topicAttr.Name, message.Content, stoppingToken);
+                                await actualProducer.PublishToKafkaAsync(topicAttr.Name, message.Id.ToString(), message.Content, stoppingToken);
 
                                 message.ProcessedOnUtc = DateTime.UtcNow;
                                 _logger.LogInformation("Outbox message sent successfully: {Id}", message.Id);

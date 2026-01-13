@@ -9,11 +9,11 @@ namespace Messaging.Persistence.Infrastructure
         DbContext _context
     ) : IKafkaProducer
     {
-        public async Task ProduceAsync<T>(T message, CancellationToken cancellationToken) where T : class
+        public async Task ProduceAsync<T>(T message, CancellationToken cancellationToken) where T : IEvent
         {
             var outboxMessage = new OutboxMessage
             {
-                Id = Guid.NewGuid(),
+                Id = message.Key,
                 Type = typeof(T).FullName,
                 Content = JsonSerializer.Serialize(message),
                 OccurredOnUtc = DateTime.UtcNow,

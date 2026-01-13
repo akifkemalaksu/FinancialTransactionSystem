@@ -77,7 +77,7 @@ namespace Messaging.Persistence.Infrastructure
                         {
                             _logger.LogWarning("Message Key (ID) is empty! Idempotency (Inbox) check cannot be performed.");
 
-                            throw new Exception();
+                            throw new InvalidOperationException($"Invalid message key: '{kafkaMessageKey}'. Expected a valid GUID for idempotency check.");
                         }
 
                         var alreadyProcessed = await dbContext.Set<InboxMessage>()
