@@ -45,9 +45,6 @@ services:
   init-kafka:
     image: apache/kafka:latest
     container_name: init-kafka
-    depends_on:
-      kafka-server:
-        condition: service_healthy
     entrypoint: [ '/bin/sh', '-c' ]
     command: |
       "
@@ -59,7 +56,62 @@ services:
       echo -e 'Successfully created topics:'
       /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka-server:29092 --list
       "
+    depends_on:
+      kafka-server:
+        condition: service_healthy
 
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: otel-collector
+    command: ["--config=/etc/otel-collector-config.yml"]
+    volumes:
+      - ./otel-collector-config.yml:/etc/otel-collector-config.yml
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+      - "8889:8889"
+    depends_on:
+      - tempo
+      - loki
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+  
+  tempo:
+    image: grafana/tempo:latest
+    container_name: tempo
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./tempo.yml:/etc/tempo.yaml
+    ports:
+      - "3200:3200"
+      - "4317"
+
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    command: [ "-config.file=/etc/loki/local-config.yaml" ]
+    ports:
+      - "3100:3100"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    depends_on:
+      - prometheus
+      - tempo
+      - loki
+  
   account-service:
     build:
       context: .
@@ -67,6 +119,7 @@ services:
     container_name: account-service
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
     ports:
       - "5001:8080"
     depends_on:
@@ -76,6 +129,8 @@ services:
         condition: service_started
       kafka-server:
         condition: service_healthy
+      otel-collector:
+        condition: service_started
 
   fraud-detection-service:
     build:
@@ -84,8 +139,12 @@ services:
     container_name: fraud-detection-service
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
     ports:
       - "5002:8080"
+    depends_on:
+      otel-collector:
+        condition: service_started
 
   ledger-service:
     build:
@@ -94,6 +153,7 @@ services:
     container_name: ledger-service
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
     ports:
       - "5003:8080"
     depends_on:
@@ -101,6 +161,8 @@ services:
         condition: service_healthy
       kafka-server:
         condition: service_healthy
+      otel-collector:
+        condition: service_started
 
   notification-service:
     build:
@@ -109,6 +171,7 @@ services:
     container_name: notification-service
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
     ports:
       - "5004:8080"
     depends_on:
@@ -116,6 +179,8 @@ services:
         condition: service_healthy
       kafka-server:
         condition: service_healthy
+      otel-collector:
+        condition: service_started
 
   transaction-service:
     build:
@@ -124,6 +189,7 @@ services:
     container_name: transaction-service
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
     ports:
       - "5005:8080"
     depends_on:
@@ -134,6 +200,8 @@ services:
       account-service:
         condition: service_started
       fraud-detection-service:
+        condition: service_started
+      otel-collector:
         condition: service_started
 
 volumes:

@@ -3,7 +3,6 @@ using Messaging.Configurations;
 using Messaging.Infrastructure;
 using Messaging.Persistence.BackgroundServices;
 using Messaging.Persistence.Infrastructure;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -13,8 +12,8 @@ namespace Messaging.Persistence.Extensions
 {
     public static class MessagingRegistration
     {
-        public static WebApplicationBuilder AddMessagingBus<TDbContext>(
-            this WebApplicationBuilder builder,
+        public static IHostApplicationBuilder AddMessagingBus<TDbContext>(
+            this IHostApplicationBuilder builder,
             Type type
         )
         where TDbContext : DbContext

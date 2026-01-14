@@ -4,9 +4,9 @@ using ServiceDefaults.Interfaces;
 
 namespace ServiceDefaults.Extensions
 {
-    public static class CQRSServiceRegistrar
+    public static class CQRSServiceExtensions
     {
-        public static IServiceCollection Register(this IServiceCollection services, Type type)
+        public static IServiceCollection RegisterCQRSServices(this IServiceCollection services, Type type)
         {
             services.AddScoped<IQueryDispatcher, QueryDispatcher>();
             services.AddScoped<ICommandDispatcher, CommandDispatcher>();

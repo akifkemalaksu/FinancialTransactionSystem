@@ -55,7 +55,9 @@ namespace TransactionService.Infrastructure
                 pipeline.AddTimeout(TimeSpan.FromSeconds(5));
             });
 
-            CQRSServiceRegistrar.Register(builder.Services, typeof(CreateTransferCommand));
+            builder.Services.RegisterCQRSServices(typeof(CreateTransferCommand));
+
+            builder.ConfigureOpenTelemetry();
         }
 
         private static RetryStrategyOptions<HttpResponseMessage> GetRetryOptions()

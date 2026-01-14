@@ -23,7 +23,9 @@ namespace NotificationService.Infrastructure
 
             builder.AddMessagingBus<NotificationDbContext>(typeof(TransferCreatedEventHandler));
 
-            CQRSServiceRegistrar.Register(builder.Services, typeof(CreateNotificationCommand));
+            builder.Services.RegisterCQRSServices(typeof(CreateNotificationCommand));
+
+            builder.ConfigureOpenTelemetry();
         }
     }
 }

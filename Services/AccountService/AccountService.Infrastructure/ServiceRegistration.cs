@@ -29,7 +29,9 @@ namespace AccountService.Infrastructure
 
             builder.AddMessagingBus<AccountDbContext>(typeof(TransferCreatedEventHandler));
 
-            CQRSServiceRegistrar.Register(builder.Services, typeof(GetAccountByIdQuery));
+            builder.Services.RegisterCQRSServices(typeof(GetAccountByIdQuery));
+
+            builder.ConfigureOpenTelemetry();
         }
     }
 }

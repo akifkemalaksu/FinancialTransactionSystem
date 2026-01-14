@@ -24,7 +24,9 @@ namespace LedgerService.Infrastructure
 
             builder.AddMessagingBus<LedgerDbContext>(typeof(TransferCompletedEventHandler));
 
-            CQRSServiceRegistrar.Register(builder.Services, typeof(CreateLedgerCommand));
+            builder.Services.RegisterCQRSServices(typeof(CreateLedgerCommand));
+
+            builder.ConfigureOpenTelemetry();
         }
     }
 }
