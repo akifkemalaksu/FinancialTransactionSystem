@@ -83,8 +83,6 @@ Sistem ayağa kalktığında Grafana otomatik olarak yapılandırılmış şekil
 Tarayıcınızdan aşağıdaki adrese giderek erişebilirsiniz:
 
 - **URL:** `http://localhost:3000`
-- **Kullanıcı Adı:** `admin` (varsayılan)
-- **Şifre:** `admin` (ilk girişte değiştirmeniz istenebilir)
 
 ### 2. Verileri Görüntüleme (Explore)
 
