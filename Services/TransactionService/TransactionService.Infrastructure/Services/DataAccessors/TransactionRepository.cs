@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using ServiceDefaults.Enums;
 using TransactionService.Application.Dtos.Transfers;
 using TransactionService.Application.Services.DataAccessors;
 using TransactionService.Domain.Constants;
@@ -33,14 +34,15 @@ namespace TransactionService.Infrastructure.Services.DataAccessors
                     Currency = t.Currency,
                     TransactionDate = t.TransactionDate,
                     Status = t.Status,
+                    Type = (TransactionType)t.Type,
                     Description = t.Description
                 })
                 .ToListAsync(cancellationToken);
 
             return new TransferHistoryDto
             {
-                IncomingTransfers = transfers.Where(t => t.DestinationAccountNumber == accountNumber).ToList(),
-                OutgoingTransfers = transfers.Where(t => t.SourceAccountNumber == accountNumber).ToList()
+                IncomingTransfers = transfers.Where(t => t.DestinationAccountNumber == accountNumber || (t.SourceAccountNumber == accountNumber && t.Type == TransactionType.Deposit)).ToList(),
+                OutgoingTransfers = transfers.Where(t => t.SourceAccountNumber == accountNumber && t.Type != TransactionType.Deposit).ToList()
             };
         }
 
@@ -57,6 +59,7 @@ namespace TransactionService.Infrastructure.Services.DataAccessors
                     Currency = t.Currency,
                     TransactionDate = t.TransactionDate,
                     Status = t.Status,
+                    Type = (TransactionType)t.Type,
                     Description = t.Description
                 })
                 .FirstOrDefaultAsync(cancellationToken);
@@ -75,6 +78,7 @@ namespace TransactionService.Infrastructure.Services.DataAccessors
                     Currency = t.Currency,
                     TransactionDate = t.TransactionDate,
                     Status = t.Status,
+                    Type = (TransactionType)t.Type,
                     Description = t.Description
                 })
                 .FirstOrDefaultAsync(cancellationToken);

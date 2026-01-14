@@ -15,6 +15,10 @@ Bu proje aşağıdaki modern teknolojileri ve desenleri barındırır:
 *   **Mesajlaşma (Messaging):** Apache Kafka (MassTransit ile)
 *   **Resilience (Dayanıklılık):** Polly
 *   **Containerization:** Docker & Docker Compose
+*   **Monitoring & Metrics:** Prometheus
+*   **Log Yönetimi:** Loki
+*   **Distributed Tracing:** Tempo
+*   **Görselleştirme ve Dashboard:** Grafana
 
 ## 🏗️ Servisler
 
@@ -63,3 +67,50 @@ Docker üzerinde çalışan servislerin dışarıya açılan portları:
 *   **PostgreSQL:** 5101
 *   **Redis:** 5102
 *   **Kafka:** 5103
+*   **Grafana:** 3000
+*   **Prometheus:** 9090
+*   **Loki:** 3100
+*   **Tempo:** 3200
+
+## 📈 Monitoring & Observability (Grafana)
+
+Sistem ayağa kalktıktan sonra log, metrik ve trace takibi için **Grafana** kullanılmaktadır.
+
+### 1. Grafana Erişimi
+
+Konteynerler çalışmaya başladıktan sonra tarayıcınızdan aşağıdaki adrese gidin:
+
+- URL: `http://localhost:3000`
+- Kullanıcı Adı: `admin` (varsayılan)
+- Şifre: `admin` (varsayılan – ilk girişte değiştirmeniz istenebilir)
+
+### 2. Veri Kaynaklarını (Data Sources) Ekleme
+
+Grafana içerisinde verileri görebilmek için aşağıdaki veri kaynaklarını **Connections > Data Sources** menüsünden tek tek eklemelisiniz:
+
+| Veri Kaynağı | URL                     | Açıklama                                           |
+|-------------|-------------------------|----------------------------------------------------|
+| Prometheus  | `http://prometheus:9090`| Metrik verileri (CPU, RAM, Request Count vb.)      |
+| Loki        | `http://loki:3100`      | Log verileri (Application & Container Logs)        |
+| Tempo       | `http://tempo:3200`     | Dağıtık izleme verileri (Distributed Tracing)      |
+
+### 3. Log ve Trace İlişkilendirmesi (Correlation)
+
+Logların içindeki `trace_id` üzerinden doğrudan ilgili trace görüntüsüne zıplamak için Loki veri kaynağında aşağıdaki ayarı yapın:
+
+1. Grafana'da **Data Sources > Loki** ayarlarına girin.
+2. **Derived Fields** bölümüne gidin ve **Add** butonuna basın.
+3. Aşağıdaki alanları doldurun:
+   - Name: `TraceID`
+   - Regex: `(?:trace_id|tid)=(\\w+)`
+   - Internal link: **On**
+   - Internal link target: Tempo veri kaynağını seçin.
+4. **Save & Test** diyerek değişiklikleri kaydedin.
+
+### 4. Verileri Görüntüleme (Explore)
+
+Sol menüdeki **Explore** (pusula simgesi) sekmesine tıklayarak gerçek zamanlı log, metrik ve trace sorguları yapabilirsiniz:
+
+- **Loglar için:** Veri kaynağını **Loki** seçin, `container_name` ya da servis etiketlerine göre filtreleyin.
+- **Trace’ler için:** Veri kaynağını **Tempo** seçin, **Search** sekmesiyle mikroservisler arası çağrıları ve sürelerini inceleyin.
+- **Metrikler için:** Veri kaynağını **Prometheus** seçin, `http_requests_total` gibi metrikleri aratarak sistem yükünü analiz edin.

@@ -1,3 +1,4 @@
+using ServiceDefaults.Enums;
 using TransactionService.Domain.Constants;
 
 namespace TransactionService.Application.Dtos.Transfers
@@ -11,6 +12,7 @@ namespace TransactionService.Application.Dtos.Transfers
         public string Currency { get; set; } = string.Empty;
         public DateTime TransactionDate { get; set; }
         public TransactionStatusEnum Status { get; set; }
+        public TransactionType Type { get; set; }
         public string? Description { get; set; }
     }
 }

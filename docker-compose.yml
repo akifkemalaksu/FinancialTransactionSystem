@@ -21,6 +21,11 @@ services:
     container_name: redis-server
     ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   kafka-server:
     image: apache/kafka:latest
@@ -65,20 +70,24 @@ services:
     container_name: otel-collector
     command: ["--config=/etc/otel-collector-config.yml"]
     volumes:
-      - ./otel-collector-config.yml:/etc/otel-collector-config.yml
+      - ./observability/otel-collector-config.yml:/etc/otel-collector-config.yml
     ports:
       - "4317:4317"
       - "4318:4318"
       - "8889:8889"
     depends_on:
-      - tempo
-      - loki
+      tempo:
+        condition: service_started
+      loki:
+        condition: service_started
+      prometheus:
+        condition: service_started
 
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
   
@@ -87,17 +96,18 @@ services:
     container_name: tempo
     command: [ "-config.file=/etc/tempo.yaml" ]
     volumes:
-      - ./tempo.yml:/etc/tempo.yaml
+      - ./observability/tempo.yml:/etc/tempo.yaml
     ports:
       - "3200:3200"
-      - "4317"
 
   loki:
     image: grafana/loki:latest
     container_name: loki
-    command: [ "-config.file=/etc/loki/local-config.yaml" ]
+    command: [ "-config.file=/etc/loki/loki.yml" ]
     ports:
       - "3100:3100"
+    volumes:
+      - ./observability/loki.yml:/etc/loki/loki.yml
 
   grafana:
     image: grafana/grafana:latest
@@ -108,9 +118,8 @@ services:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
     depends_on:
-      - prometheus
-      - tempo
-      - loki
+      otel-collector:
+        condition: service_started
   
   account-service:
     build:
@@ -126,7 +135,7 @@ services:
       postgres-server:
         condition: service_healthy
       redis-server:
-        condition: service_started
+        condition: service_healthy
       kafka-server:
         condition: service_healthy
       otel-collector:
@@ -194,9 +203,9 @@ services:
       - "5005:8080"
     depends_on:
       postgres-server:
-        condition: service_healthy
+        condition: service_started
       kafka-server:
-        condition: service_healthy
+        condition: service_started
       account-service:
         condition: service_started
       fraud-detection-service:
