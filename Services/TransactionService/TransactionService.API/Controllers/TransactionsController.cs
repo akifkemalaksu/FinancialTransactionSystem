@@ -5,6 +5,7 @@ using ServiceDefaults.Dtos.Responses;
 using ServiceDefaults.Enums;
 using ServiceDefaults.Interfaces;
 using TransactionService.Application.Features.TransferFeatures.CreateTransfer;
+using TransactionService.Application.Features.TransferFeatures.GetTransferHistory;
 
 namespace TransactionService.API.Controllers
 {
@@ -12,7 +13,8 @@ namespace TransactionService.API.Controllers
     [ApiController]
     [EnableRateLimiting("transaction-create")]
     public class TransactionsController(
-        ICommandDispatcher _commandDispatcher
+        ICommandDispatcher _commandDispatcher,
+        IQueryDispatcher _queryDispatcher
     ) : ApiControllerBase
     {
         [HttpPost]
@@ -40,6 +42,19 @@ namespace TransactionService.API.Controllers
             };
 
             var result = await _commandDispatcher.DispatchAsync<CreateTransferCommand, ApiResponse<CreateTransferCommandResult>>(command);
+
+            return CreateResult(result);
+        }
+
+        [HttpGet("by-account-number/{accountNumber}")]
+        public async Task<IActionResult> GetTransferHistoryByAccountNumber(string accountNumber, CancellationToken cancellationToken)
+        {
+            var query = new GetTransferHistoryQuery
+            {
+                AccountNumber = accountNumber
+            };
+
+            var result = await _queryDispatcher.DispatchAsync<GetTransferHistoryQuery, ApiResponse<GetTransferHistoryQueryResult>>(query, cancellationToken);
 
             return CreateResult(result);
         }

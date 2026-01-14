@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using NotificationService.Application.Services.DataAccessors;
 using NotificationService.Domain.Entities;
 using NotificationService.Infrastructure.Data;
@@ -8,9 +9,9 @@ namespace NotificationService.Infrastructure.Services.DataAccessors
     {
         public void Add(Notification notification) => _context.Notifications.Add(notification);
 
-        public async Task SaveChangesAsync(CancellationToken cancellationToken)
+        public Task<List<Notification>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            await _context.SaveChangesAsync(cancellationToken);
+            return _context.Notifications.ToListAsync(cancellationToken);
         }
     }
 }
