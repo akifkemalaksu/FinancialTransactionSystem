@@ -1,9 +1,12 @@
+using TransactionService.API.Extensions;
 using TransactionService.Infrastructure;
 using TransactionService.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.RegisterInfrastructureServices();
+
+builder.Services.AddTransactionRateLimiting();
 
 builder.Services.AddControllers();
 
@@ -19,6 +22,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseRateLimiter();
 
 app.UseAuthorization();
 

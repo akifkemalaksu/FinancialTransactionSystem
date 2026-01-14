@@ -119,6 +119,10 @@ namespace TransactionService.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("IdempotencyKey")
+                        .IsUnique()
+                        .HasFilter("\"IdempotencyKey\" IS NOT NULL");
+
                     b.ToTable("Transfers");
                 });
 #pragma warning restore 612, 618

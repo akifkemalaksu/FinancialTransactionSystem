@@ -1,9 +1,12 @@
 using NotificationService.Infrastructure;
 using NotificationService.Infrastructure.Extensions;
+using ServiceDefaults.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.RegisterInfrastructureServices();
+
+builder.Services.AddDefaultRateLimiting();
 
 builder.Services.AddControllers();
 
@@ -19,6 +22,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseRateLimiter();
 
 app.UseAuthorization();
 

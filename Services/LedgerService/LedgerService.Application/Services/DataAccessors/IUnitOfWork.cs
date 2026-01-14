@@ -1,6 +1,6 @@
 namespace LedgerService.Application.Services.DataAccessors
 {
-    public interface IUnitOfWork : IDisposable
+    public interface IUnitOfWork
     {
         ILedgerRepository Ledgers { get; }
 

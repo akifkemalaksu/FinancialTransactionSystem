@@ -1,4 +1,4 @@
-﻿using AccountService.Domain.Entities;
+using AccountService.Domain.Entities;
 using Messaging.Persistence.EntityConfigurations;
 using Microsoft.EntityFrameworkCore;
 

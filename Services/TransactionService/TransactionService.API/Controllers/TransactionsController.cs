@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using ServiceDefaults.Controllers;
 using ServiceDefaults.Dtos.Responses;
 using ServiceDefaults.Enums;
@@ -9,6 +10,7 @@ namespace TransactionService.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableRateLimiting("transaction-create")]
     public class TransactionsController(
         ICommandDispatcher _commandDispatcher
     ) : ApiControllerBase

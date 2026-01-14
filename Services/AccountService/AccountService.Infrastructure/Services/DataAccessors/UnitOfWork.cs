@@ -14,8 +14,5 @@ namespace AccountService.Infrastructure.Services.DataAccessors
         public IClientRepository Clients => _clients ??= new ClientRepository(_context);
 
         public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) => _context.SaveChangesAsync(cancellationToken);
-
-        public void Dispose() => _context.Dispose();
-
     }
 }

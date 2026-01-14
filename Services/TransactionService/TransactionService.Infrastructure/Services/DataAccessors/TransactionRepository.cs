@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TransactionService.Application.Dtos.Transfers;
 using TransactionService.Application.Services.DataAccessors;
+using TransactionService.Domain.Constants;
 using TransactionService.Domain.Entities;
 using TransactionService.Infrastructure.Data;
 
@@ -9,6 +10,15 @@ namespace TransactionService.Infrastructure.Services.DataAccessors
     public class TransferRepository(TransactionDbContext _dbContext) : ITransferRepository
     {
         public void Add(Transfer transfer) => _dbContext.Transfers.Add(transfer);
+
+        public async Task<List<Transfer>> GetPendingAsync(int take, CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.Transfers
+                .Where(t => t.Status == TransactionStatusEnum.Pending)
+                .OrderBy(t => t.TransactionDate)
+                .Take(take)
+                .ToListAsync(cancellationToken);
+        }
 
         public async Task<TransferHistoryDto> GetByAccountNumberAsync(string accountNumber, CancellationToken cancellationToken = default)
         {

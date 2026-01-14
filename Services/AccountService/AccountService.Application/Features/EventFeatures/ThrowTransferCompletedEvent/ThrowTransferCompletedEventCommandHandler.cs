@@ -11,7 +11,7 @@ namespace AccountService.Application.Features.EventFeatures.ThrowTransferComplet
     {
         public async Task<ApiResponse<ThrowTransferCompletedEventCommandResult>> HandleAsync(ThrowTransferCompletedEventCommand command, CancellationToken cancellationToken = default)
         {
-            
+
             var eventMessage = new TransferCompletedEvent
             {
                 TransactionId = command.TransactionId,

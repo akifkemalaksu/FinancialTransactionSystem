@@ -1,6 +1,6 @@
 namespace AccountService.Application.Services.DataAccessors
 {
-    public interface IUnitOfWork : IDisposable
+    public interface IUnitOfWork
     {
         IAccountRepository Accounts { get; }
         IClientRepository Clients { get; }

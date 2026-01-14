@@ -1,6 +1,6 @@
 namespace TransactionService.Application.Services.DataAccessors
 {
-    public interface IUnitOfWork : IDisposable
+    public interface IUnitOfWork
     {
         ITransferRepository Transfers { get; }
 

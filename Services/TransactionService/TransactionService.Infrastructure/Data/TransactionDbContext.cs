@@ -16,6 +16,11 @@ namespace TransactionService.Infrastructure.Data
         {
             modelBuilder.ApplyMessagingConfiguration();
 
+            modelBuilder.Entity<Transfer>()
+                .HasIndex(t => t.IdempotencyKey)
+                .IsUnique()
+                .HasFilter("\"IdempotencyKey\" IS NOT NULL");
+
             base.OnModelCreating(modelBuilder);
         }
     }

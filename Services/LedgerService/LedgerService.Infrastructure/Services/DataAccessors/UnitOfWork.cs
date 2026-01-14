@@ -12,7 +12,5 @@ namespace LedgerService.Infrastructure.Services.DataAccessors
         public ILedgerRepository Ledgers => _ledgers ??= new LedgerRepository(_context);
 
         public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) => _context.SaveChangesAsync(cancellationToken);
-
-        public void Dispose() => _context.Dispose();
     }
 }

@@ -3,10 +3,14 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Polly;
+using Polly.CircuitBreaker;
+using Polly.Retry;
 using ServiceDefaults.Extensions;
 using TransactionService.Application.Features.TransferFeatures.CreateTransfer;
 using TransactionService.Application.Services.Clients;
 using TransactionService.Application.Services.DataAccessors;
+using TransactionService.Infrastructure.BackgroundServices;
 using TransactionService.Infrastructure.Data;
 using TransactionService.Infrastructure.Services.Clients;
 using TransactionService.Infrastructure.Services.DataAccessors;
@@ -24,19 +28,61 @@ namespace TransactionService.Infrastructure
 
             builder.AddMessagingBus<TransactionDbContext>(typeof(CreateTransferCommand));
 
-            builder.Services.AddScoped<IAccountService, AccountService>();
-            builder.Services.AddScoped<IFraudDetectionService, FraudDetectionService>();
+            builder.Services.AddScoped<IAccountApiService, AccountApiService>();
+            builder.Services.AddScoped<IFraudDetectionApiService, FraudDetectionApiService>();
+            builder.Services.AddScoped<ITransferApiService, MockTransferApiService>();
+            builder.Services.AddHostedService<TransferStatusWorker>();
 
-            builder.Services.AddHttpClient(nameof(AccountService), conf =>
+            builder.Services.AddHttpClient(nameof(AccountApiService), conf =>
             {
-                conf.BaseAddress = new Uri(builder.Configuration["Services:AccountService:BaseUrl"]!);
+                conf.BaseAddress = new Uri(builder.Configuration["Services:AccountApiService:BaseUrl"]!);
+            })
+            .AddResilienceHandler("account-api-resilience", pipeline =>
+            {
+                pipeline.AddRetry(GetRetryOptions());
+                pipeline.AddCircuitBreaker(GetCircuitBreakerOptions());
+                pipeline.AddTimeout(TimeSpan.FromSeconds(5));
             });
-            builder.Services.AddHttpClient(nameof(FraudDetectionService), conf =>
+
+            builder.Services.AddHttpClient(nameof(FraudDetectionApiService), conf =>
             {
-                conf.BaseAddress = new Uri(builder.Configuration[$"Services:FraudDetectionService:BaseUrl"]!);
+                conf.BaseAddress = new Uri(builder.Configuration[$"Services:FraudDetectionApiService:BaseUrl"]!);
+            })
+            .AddResilienceHandler("fraud-api-resilience", pipeline =>
+            {
+                pipeline.AddRetry(GetRetryOptions());
+                pipeline.AddCircuitBreaker(GetCircuitBreakerOptions());
+                pipeline.AddTimeout(TimeSpan.FromSeconds(5));
             });
 
             CQRSServiceRegistrar.Register(builder.Services, typeof(CreateTransferCommand));
+        }
+
+        private static RetryStrategyOptions<HttpResponseMessage> GetRetryOptions()
+        {
+            return new RetryStrategyOptions<HttpResponseMessage>
+            {
+                MaxRetryAttempts = 3,
+                Delay = TimeSpan.FromSeconds(2),
+                BackoffType = DelayBackoffType.Exponential,
+                ShouldHandle = new PredicateBuilder<HttpResponseMessage>()
+                    .Handle<HttpRequestException>()
+                    .HandleResult(response => !response.IsSuccessStatusCode)
+            };
+        }
+
+        private static CircuitBreakerStrategyOptions<HttpResponseMessage> GetCircuitBreakerOptions()
+        {
+            return new CircuitBreakerStrategyOptions<HttpResponseMessage>
+            {
+                SamplingDuration = TimeSpan.FromSeconds(10),
+                FailureRatio = 0.2,
+                MinimumThroughput = 3,
+                BreakDuration = TimeSpan.FromSeconds(30),
+                ShouldHandle = new PredicateBuilder<HttpResponseMessage>()
+                    .Handle<HttpRequestException>()
+                    .HandleResult(response => !response.IsSuccessStatusCode)
+            };
         }
     }
 }

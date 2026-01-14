@@ -12,7 +12,5 @@ namespace TransactionService.Infrastructure.Services.DataAccessors
         public ITransferRepository Transfers => _transfers ??= new TransferRepository(_context);
 
         public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) => _context.SaveChangesAsync(cancellationToken);
-
-        public void Dispose() => _context.Dispose();
     }
 }

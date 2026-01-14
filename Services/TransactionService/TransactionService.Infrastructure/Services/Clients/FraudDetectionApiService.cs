@@ -5,10 +5,10 @@ using TransactionService.Application.Services.Clients;
 
 namespace TransactionService.Infrastructure.Services.Clients
 {
-    public class FraudDetectionService(
+    public class FraudDetectionApiService(
         IHttpClientFactory httpClientFactory,
-        ILogger<FraudDetectionService> logger
-    ) : BaseHttpClient(httpClientFactory.CreateClient(nameof(FraudDetectionService)), logger), IFraudDetectionService
+        ILogger<FraudDetectionApiService> logger
+    ) : BaseHttpClient(httpClientFactory.CreateClient(nameof(FraudDetectionApiService)), logger), IFraudDetectionApiService
     {
         public async Task<bool> IsFraudulentAsync(FraudCheckRequest request, CancellationToken cancellationToken = default)
         {

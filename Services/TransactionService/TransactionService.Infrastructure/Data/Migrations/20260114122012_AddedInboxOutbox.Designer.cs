@@ -12,7 +12,7 @@ using TransactionService.Infrastructure.Data;
 namespace TransactionService.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(TransactionDbContext))]
-    [Migration("20260113224537_AddedInboxOutbox")]
+    [Migration("20260114122012_AddedInboxOutbox")]
     partial class AddedInboxOutbox
     {
         /// <inheritdoc />
@@ -121,6 +121,10 @@ namespace TransactionService.Infrastructure.Data.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IdempotencyKey")
+                        .IsUnique()
+                        .HasFilter("\"IdempotencyKey\" IS NOT NULL");
 
                     b.ToTable("Transfers");
                 });

@@ -1,6 +1,5 @@
 using AccountService.Application.Features.AccountFeatures.UpdateAccountBalance;
 using AccountService.Application.Features.EventFeatures.ThrowTransferCompletedEvent;
-using Confluent.Kafka;
 using Messaging.Abstractions;
 using Messaging.Contracts;
 using ServiceDefaults.Dtos.Responses;
@@ -29,7 +28,7 @@ namespace AccountService.Application.EventHandlers
                     amount = message.Amount;
                     newBalance = await UpdateAccountBalanceAsync(message.SourceAccountNumber, amount);
                 }
-                
+
                 await PublishTransferCompletedEventAsync(message, message.SourceAccountNumber, newBalance, amount);
                 return;
             }

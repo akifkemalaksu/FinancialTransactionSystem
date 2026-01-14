@@ -12,7 +12,7 @@ using TransactionService.Infrastructure.Data;
 namespace TransactionService.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(TransactionDbContext))]
-    [Migration("20260113224450_InitializeDb")]
+    [Migration("20260114121946_InitializeDb")]
     partial class InitializeDb
     {
         /// <inheritdoc />
@@ -66,6 +66,10 @@ namespace TransactionService.Infrastructure.Data.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IdempotencyKey")
+                        .IsUnique()
+                        .HasFilter("\"IdempotencyKey\" IS NOT NULL");
 
                     b.ToTable("Transfers");
                 });

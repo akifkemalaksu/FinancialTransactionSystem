@@ -30,6 +30,13 @@ namespace TransactionService.Infrastructure.Data.Migrations
                 {
                     table.PrimaryKey("PK_Transfers", x => x.Id);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Transfers_IdempotencyKey",
+                table: "Transfers",
+                column: "IdempotencyKey",
+                unique: true,
+                filter: "\"IdempotencyKey\" IS NOT NULL");
         }
 
         /// <inheritdoc />

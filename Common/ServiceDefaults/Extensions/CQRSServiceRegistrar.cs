@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ServiceDefaults.Implementations;
 using ServiceDefaults.Interfaces;
-using System.Reflection;
 
 namespace ServiceDefaults.Extensions
 {

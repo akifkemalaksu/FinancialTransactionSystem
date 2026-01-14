@@ -15,8 +15,8 @@ namespace TransactionService.Application.Features.TransferFeatures.CreateTransfe
 {
     public class CreateTransferCommandHandler(
         IUnitOfWork _unitOfWork,
-        IAccountService _accountService,
-        IFraudDetectionService _fraudDetectionService,
+        IAccountApiService _accountService,
+        IFraudDetectionApiService _fraudDetectionService,
         IKafkaProducer _kafkaProducer
     ) : ICommandHandler<CreateTransferCommand, ApiResponse<CreateTransferCommandResult>>
     {

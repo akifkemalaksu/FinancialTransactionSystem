@@ -5,10 +5,10 @@ using TransactionService.Application.Services.Clients;
 
 namespace TransactionService.Infrastructure.Services.Clients
 {
-    public class AccountService(
+    public class AccountApiService(
         IHttpClientFactory httpClientFactory,
-        ILogger<AccountService> logger
-        ) : BaseHttpClient(httpClientFactory.CreateClient(nameof(AccountService)), logger), IAccountService
+        ILogger<AccountApiService> logger
+        ) : BaseHttpClient(httpClientFactory.CreateClient(nameof(AccountApiService)), logger), IAccountApiService
     {
         public async Task<AccountDto?> GetByAccountNumberAsync(string accountNumber, CancellationToken cancellationToken = default)
         {
