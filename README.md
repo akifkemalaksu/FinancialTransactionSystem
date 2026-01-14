@@ -64,10 +64,11 @@ Docker üzerinde çalışan servislerin dışarıya açılan portları:
 *   **Ledger Service:** 5003
 *   **Notification Service:** 5004
 *   **Transaction Service:** 5005
-*   **PostgreSQL:** 5101
-*   **Redis:** 5102
-*   **Kafka:** 5103
+*   **PostgreSQL:** 5432
+*   **Redis:** 6379
+*   **Kafka:** 9092
 *   **Grafana:** 3000
+*   **Otel Collector:** 4317, 4318, 8889
 *   **Prometheus:** 9090
 *   **Loki:** 3100
 *   **Tempo:** 3200
