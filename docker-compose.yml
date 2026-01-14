@@ -1,0 +1,151 @@
+version: '3.8'
+
+services:
+  postgres-server:
+    image: postgres:latest
+    container_name: postgres-server
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis-server:
+    image: redis:latest
+    container_name: redis-server
+    ports:
+      - "6379:6379"
+
+  kafka-server:
+    image: apache/kafka:latest
+    container_name: kafka-server
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_NODE_ID: 1
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:29093
+      KAFKA_LISTENERS: PLAINTEXT://:29092,CONTROLLER://:29093,EXTERNAL://:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-server:29092,EXTERNAL://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    healthcheck:
+      test: ["CMD", "/opt/kafka/bin/kafka-topics.sh", "--bootstrap-server", "localhost:9092", "--list"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  init-kafka:
+    image: apache/kafka:latest
+    container_name: init-kafka
+    depends_on:
+      kafka-server:
+        condition: service_healthy
+    entrypoint: [ '/bin/sh', '-c' ]
+    command: |
+      "
+      echo -e 'Creating kafka topics...'
+      /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka-server:29092 --create --if-not-exists --topic transfer-created --partitions 1 --replication-factor 1
+      /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka-server:29092 --create --if-not-exists --topic transfer-completed --partitions 1 --replication-factor 1
+      
+      echo -e 'Successfully created topics:'
+      /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka-server:29092 --list
+      "
+
+  account-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE: AccountService
+    container_name: account-service
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+    ports:
+      - "5001:8080"
+    depends_on:
+      postgres-server:
+        condition: service_healthy
+      redis-server:
+        condition: service_started
+      kafka-server:
+        condition: service_healthy
+
+  fraud-detection-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE: FraudDetectionService
+    container_name: fraud-detection-service
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+    ports:
+      - "5002:8080"
+
+  ledger-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE: LedgerService
+    container_name: ledger-service
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+    ports:
+      - "5003:8080"
+    depends_on:
+      postgres-server:
+        condition: service_healthy
+      kafka-server:
+        condition: service_healthy
+
+  notification-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE: NotificationService
+    container_name: notification-service
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+    ports:
+      - "5004:8080"
+    depends_on:
+      postgres-server:
+        condition: service_healthy
+      kafka-server:
+        condition: service_healthy
+
+  transaction-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE: TransactionService
+    container_name: transaction-service
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+    ports:
+      - "5005:8080"
+    depends_on:
+      postgres-server:
+        condition: service_healthy
+      kafka-server:
+        condition: service_healthy
+      account-service:
+        condition: service_started
+      fraud-detection-service:
+        condition: service_started
+
+volumes:
+  postgres_data:

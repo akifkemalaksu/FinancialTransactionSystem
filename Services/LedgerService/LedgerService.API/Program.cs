@@ -1,4 +1,5 @@
 using LedgerService.Infrastructure;
+using LedgerService.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +9,8 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+app.Services.ApplyMigrations();
 
 if (app.Environment.IsDevelopment())
 {

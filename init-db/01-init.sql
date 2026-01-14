@@ -1,0 +1,4 @@
+CREATE DATABASE "AccountDb";
+CREATE DATABASE "LedgerDb";
+CREATE DATABASE "NotificationDb";
+CREATE DATABASE "TransactionDb";
