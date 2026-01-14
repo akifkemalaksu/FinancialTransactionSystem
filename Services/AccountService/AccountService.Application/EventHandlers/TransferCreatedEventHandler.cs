@@ -1,5 +1,6 @@
 using AccountService.Application.Features.AccountFeatures.UpdateAccountBalance;
 using AccountService.Application.Features.EventFeatures.ThrowTransferCompletedEvent;
+using Confluent.Kafka;
 using Messaging.Abstractions;
 using Messaging.Contracts;
 using ServiceDefaults.Dtos.Responses;
@@ -16,48 +17,61 @@ namespace AccountService.Application.EventHandlers
         {
             if (message.DestinationAccountNumber is null)
             {
+                decimal newBalance = 0;
+                decimal amount = 0;
                 if ((TransactionType)message.Type == TransactionType.Withdraw)
                 {
-                    await UpdateAccountBalanceAsync(message.SourceAccountNumber, -message.Amount);
+                    amount = -message.Amount;
+                    newBalance = await UpdateAccountBalanceAsync(message.SourceAccountNumber, amount);
                 }
                 else if ((TransactionType)message.Type == TransactionType.Deposit)
                 {
-                    await UpdateAccountBalanceAsync(message.SourceAccountNumber, message.Amount);
+                    amount = message.Amount;
+                    newBalance = await UpdateAccountBalanceAsync(message.SourceAccountNumber, amount);
                 }
-
-                await PublishTransferCompletedEventAsync(message);
+                
+                await PublishTransferCompletedEventAsync(message, message.SourceAccountNumber, newBalance, amount);
                 return;
             }
 
-            await UpdateAccountBalanceAsync(message.SourceAccountNumber, -message.Amount);
-            await UpdateAccountBalanceAsync(message.DestinationAccountNumber, message.Amount);
+            decimal sourceAmount = -message.Amount;
+            decimal sourceNewBalance = await UpdateAccountBalanceAsync(message.SourceAccountNumber, sourceAmount);
+            await PublishTransferCompletedEventAsync(message, message.SourceAccountNumber, sourceNewBalance, sourceAmount);
 
-            await PublishTransferCompletedEventAsync(message);
+            decimal destinationAmount = message.Amount;
+            decimal destinationNewBalance = await UpdateAccountBalanceAsync(message.DestinationAccountNumber, destinationAmount);
+            await PublishTransferCompletedEventAsync(message, message.DestinationAccountNumber, destinationNewBalance, destinationAmount);
         }
 
-        private async Task UpdateAccountBalanceAsync(string accountNumber, decimal amount)
+        private async Task PublishTransferCompletedEventAsync(TransferCreatedEvent message, string accountNumber, decimal balance, decimal amount)
+        {
+            var throwTransferCompletedEventCommand = new ThrowTransferCompletedEventCommand
+            {
+                TransactionId = message.TransactionId,
+                Currency = message.Currency,
+                AccountNumber = accountNumber,
+                Description = message.Description,
+                Balance = balance,
+                Amount = amount
+            };
+            await _commandDispatcher.DispatchAsync<ThrowTransferCompletedEventCommand, ApiResponse<ThrowTransferCompletedEventCommandResult>>(throwTransferCompletedEventCommand);
+        }
+
+        private async Task<decimal> UpdateAccountBalanceAsync(string accountNumber, decimal amount)
         {
             var command = new UpdateAccountBalanceCommand
             {
                 AccountNumber = accountNumber,
                 Amount = amount
             };
-            await _commandDispatcher.DispatchAsync<UpdateAccountBalanceCommand, ApiResponse<UpdateAccountBalanceCommandResult>>(command);
-        }
+            var response = await _commandDispatcher.DispatchAsync<UpdateAccountBalanceCommand, ApiResponse<UpdateAccountBalanceCommandResult>>(command);
 
-        private async Task PublishTransferCompletedEventAsync(TransferCreatedEvent message)
-        {
-            var throwTransferCompletedEventCommand = new ThrowTransferCompletedEventCommand
+            if (!response.IsSuccess)
             {
-                TransactionId = message.TransactionId,
-                Currency = message.Currency,
-                SourceAccountNumber = message.SourceAccountNumber,
-                Amount = message.Amount,
-                Description = message.Description,
-                DestinationAccountNumber = message.DestinationAccountNumber,
-                Type = message.Type
-            };
-            await _commandDispatcher.DispatchAsync<ThrowTransferCompletedEventCommand, ApiResponse<ThrowTransferCompletedEventCommandResult>>(throwTransferCompletedEventCommand);
+                throw new Exception($"Failed to update account balance for account {accountNumber}: {response.Message}");
+            }
+
+            return response.Data.NewBalance;
         }
     }
 }

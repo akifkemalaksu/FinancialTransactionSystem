@@ -3,7 +3,6 @@ using LedgerService.Domain.Constants;
 using Messaging.Abstractions;
 using Messaging.Contracts;
 using ServiceDefaults.Dtos.Responses;
-using ServiceDefaults.Enums;
 using ServiceDefaults.Interfaces;
 
 namespace LedgerService.Application.EventHandlers
@@ -14,18 +13,8 @@ namespace LedgerService.Application.EventHandlers
     {
         public async Task HandleAsync(TransferCompletedEvent message)
         {
-            if (message.DestinationAccountNumber is null)
-            {
-                var transactionDirection = (TransactionType)message.Type == TransactionType.Withdraw
-                    ? TransactionDirection.Debit
-                    : TransactionDirection.Credit;
-
-                await CreateLedgerEntryAsync(message, message.SourceAccountNumber, transactionDirection);
-                return;
-            }
-
-            await CreateLedgerEntryAsync(message, message.SourceAccountNumber, TransactionDirection.Debit);
-            await CreateLedgerEntryAsync(message, message.DestinationAccountNumber, TransactionDirection.Credit);
+            var direction = message.Amount >= 0 ? TransactionDirection.Credit : TransactionDirection.Debit;
+            await CreateLedgerEntryAsync(message, message.AccountNumber, direction);
         }
 
         private async Task CreateLedgerEntryAsync(TransferCompletedEvent message, string accountNumber, TransactionDirection direction)

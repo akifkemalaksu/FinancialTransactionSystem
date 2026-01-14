@@ -11,15 +11,15 @@ namespace AccountService.Application.Features.EventFeatures.ThrowTransferComplet
     {
         public async Task<ApiResponse<ThrowTransferCompletedEventCommandResult>> HandleAsync(ThrowTransferCompletedEventCommand command, CancellationToken cancellationToken = default)
         {
+            
             var eventMessage = new TransferCompletedEvent
             {
                 TransactionId = command.TransactionId,
-                SourceAccountNumber = command.SourceAccountNumber,
-                DestinationAccountNumber = command.DestinationAccountNumber,
+                AccountNumber = command.AccountNumber,
                 Amount = command.Amount,
+                BalanceAfter = command.Balance,
                 Currency = command.Currency,
-                Description = command.Description,
-                Type = command.Type
+                Description = command.Description
             };
             await _kafkaProducer.ProduceAsync(eventMessage, cancellationToken);
 

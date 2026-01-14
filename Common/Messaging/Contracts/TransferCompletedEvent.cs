@@ -6,11 +6,10 @@ namespace Messaging.Contracts
     public record TransferCompletedEvent : KafkaEvent
     {
         public Guid TransactionId { get; init; }
-        public required string SourceAccountNumber { get; init; }
-        public string? DestinationAccountNumber { get; init; }
+        public required string AccountNumber { get; init; }
         public required string Currency { get; init; }
         public string? Description { get; init; }
         public decimal Amount { get; init; }
-        public int Type { get; init; }
+        public decimal BalanceAfter { get; init; }
     }
 }
