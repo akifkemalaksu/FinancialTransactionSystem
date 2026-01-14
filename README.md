@@ -40,7 +40,7 @@ docker compose up --build -d
 
 Bu komut şunları yapar:
 *   PostgreSQL, Redis ve Kafka konteynerlerini başlatır.
-*   Gerekli Kafka topic'lerini (`transfer-created`, `transfer-completed`) oluşturur.
+*   Gerekli Kafka topic'lerini (`transfer-created`, `transfer-completed`, `transfer-failed`) oluşturur.
 *   Tüm mikroservisleri (.NET 10) build eder ve çalıştırır.
 
 ### Sistemi Durdurma
