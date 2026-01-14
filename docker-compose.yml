@@ -70,7 +70,7 @@ services:
     container_name: otel-collector
     command: ["--config=/etc/otel-collector-config.yml"]
     volumes:
-      - ./observability/otel-collector-config.yml:/etc/otel-collector-config.yml
+      - ./Observability/otel-collector-config.yml:/etc/otel-collector-config.yml
     ports:
       - "4317:4317"
       - "4318:4318"
@@ -87,7 +87,7 @@ services:
     image: prom/prometheus:latest
     container_name: prometheus
     volumes:
-      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./Observability/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
   
@@ -96,7 +96,7 @@ services:
     container_name: tempo
     command: [ "-config.file=/etc/tempo.yaml" ]
     volumes:
-      - ./observability/tempo.yml:/etc/tempo.yaml
+      - ./Observability/tempo.yml:/etc/tempo.yaml
     ports:
       - "3200:3200"
 
@@ -107,13 +107,16 @@ services:
     ports:
       - "3100:3100"
     volumes:
-      - ./observability/loki.yml:/etc/loki/loki.yml
+      - ./Observability/loki.yml:/etc/loki/loki.yml
 
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
     ports:
       - "3000:3000"
+    volumes:
+      - ./Observability/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+      - grafana_data:/var/lib/grafana
     environment:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
@@ -215,3 +218,4 @@ services:
 
 volumes:
   postgres_data:
+  grafana_data:

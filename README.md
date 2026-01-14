@@ -78,39 +78,22 @@ Sistem ayağa kalktıktan sonra log, metrik ve trace takibi için **Grafana** ku
 
 ### 1. Grafana Erişimi
 
-Konteynerler çalışmaya başladıktan sonra tarayıcınızdan aşağıdaki adrese gidin:
+Sistem ayağa kalktığında Grafana otomatik olarak yapılandırılmış şekilde gelir (Veri kaynakları `datasources.yml` üzerinden otomatik tanımlanır).
 
-- URL: `http://localhost:3000`
-- Kullanıcı Adı: `admin` (varsayılan)
-- Şifre: `admin` (varsayılan – ilk girişte değiştirmeniz istenebilir)
+Tarayıcınızdan aşağıdaki adrese giderek erişebilirsiniz:
 
-### 2. Veri Kaynaklarını (Data Sources) Ekleme
+- **URL:** `http://localhost:3000`
+- **Kullanıcı Adı:** `admin` (varsayılan)
+- **Şifre:** `admin` (ilk girişte değiştirmeniz istenebilir)
 
-Grafana içerisinde verileri görebilmek için aşağıdaki veri kaynaklarını **Connections > Data Sources** menüsünden tek tek eklemelisiniz:
+### 2. Verileri Görüntüleme (Explore)
 
-| Veri Kaynağı | URL                     | Açıklama                                           |
-|-------------|-------------------------|----------------------------------------------------|
-| Prometheus  | `http://prometheus:9090`| Metrik verileri (CPU, RAM, Request Count vb.)      |
-| Loki        | `http://loki:3100`      | Log verileri (Application & Container Logs)        |
-| Tempo       | `http://tempo:3200`     | Dağıtık izleme verileri (Distributed Tracing)      |
+Veri kaynakları (Prometheus, Loki, Tempo) hazır olduğu için doğrudan sorgulama yapabilirsiniz:
 
-### 3. Log ve Trace İlişkilendirmesi (Correlation)
+1. Sol menüdeki **Explore** (pusula simgesi) sekmesine tıklayın.
+2. Sol üstteki açılır menüden veri kaynağını seçin:
+   - **Loki:** Logları incelemek için (örn. `container_name` filtresi ile).
+   - **Tempo:** Trace'leri (izleri) görüntülemek ve mikroservisler arası akışı takip etmek için.
+   - **Prometheus:** Sistem metriklerini (CPU, Request Count vb.) sorgulamak için.
 
-Logların içindeki `trace_id` üzerinden doğrudan ilgili trace görüntüsüne zıplamak için Loki veri kaynağında aşağıdaki ayarı yapın:
-
-1. Grafana'da **Data Sources > Loki** ayarlarına girin.
-2. **Derived Fields** bölümüne gidin ve **Add** butonuna basın.
-3. Aşağıdaki alanları doldurun:
-   - Name: `TraceID`
-   - Regex: `(?:trace_id|tid)=(\\w+)`
-   - Internal link: **On**
-   - Internal link target: Tempo veri kaynağını seçin.
-4. **Save & Test** diyerek değişiklikleri kaydedin.
-
-### 4. Verileri Görüntüleme (Explore)
-
-Sol menüdeki **Explore** (pusula simgesi) sekmesine tıklayarak gerçek zamanlı log, metrik ve trace sorguları yapabilirsiniz:
-
-- **Loglar için:** Veri kaynağını **Loki** seçin, `container_name` ya da servis etiketlerine göre filtreleyin.
-- **Trace’ler için:** Veri kaynağını **Tempo** seçin, **Search** sekmesiyle mikroservisler arası çağrıları ve sürelerini inceleyin.
-- **Metrikler için:** Veri kaynağını **Prometheus** seçin, `http_requests_total` gibi metrikleri aratarak sistem yükünü analiz edin.
+> **Not:** Loglar içerisindeki `trace_id` alanları otomatik olarak Tempo ile ilişkilendirilmiştir. Bir log satırındaki trace ID'ye tıklayarak doğrudan o işlemin tüm akışını (trace) görüntüleyebilirsiniz.
