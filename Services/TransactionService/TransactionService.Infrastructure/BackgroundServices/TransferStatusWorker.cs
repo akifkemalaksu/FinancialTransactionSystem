@@ -65,7 +65,7 @@ namespace TransactionService.Infrastructure.BackgroundServices
                     logger.LogError(ex, "Error occurred while processing transfer statuses.");
                 }
 
-                await Task.Delay(5000, stoppingToken);
+                await Task.Delay(1000, stoppingToken);
             }
         }
     }
