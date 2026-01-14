@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   postgres-server:
     image: postgres:latest
@@ -65,9 +63,7 @@ services:
   account-service:
     build:
       context: .
-      dockerfile: Dockerfile
-      args:
-        SERVICE: AccountService
+      dockerfile: Services/AccountService/AccountService.API/Dockerfile
     container_name: account-service
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
@@ -84,9 +80,7 @@ services:
   fraud-detection-service:
     build:
       context: .
-      dockerfile: Dockerfile
-      args:
-        SERVICE: FraudDetectionService
+      dockerfile: Services/FraudDetectionService/FraudDetectionService.API/Dockerfile
     container_name: fraud-detection-service
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
@@ -96,9 +90,7 @@ services:
   ledger-service:
     build:
       context: .
-      dockerfile: Dockerfile
-      args:
-        SERVICE: LedgerService
+      dockerfile: Services/LedgerService/LedgerService.API/Dockerfile
     container_name: ledger-service
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
@@ -113,9 +105,7 @@ services:
   notification-service:
     build:
       context: .
-      dockerfile: Dockerfile
-      args:
-        SERVICE: NotificationService
+      dockerfile: Services/NotificationService/NotificationService.API/Dockerfile
     container_name: notification-service
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
@@ -130,9 +120,7 @@ services:
   transaction-service:
     build:
       context: .
-      dockerfile: Dockerfile
-      args:
-        SERVICE: TransactionService
+      dockerfile: Services/TransactionService/TransactionService.API/Dockerfile
     container_name: transaction-service
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker

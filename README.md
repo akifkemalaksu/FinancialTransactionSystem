@@ -60,6 +60,6 @@ Docker üzerinde çalışan servislerin dışarıya açılan portları:
 *   **Ledger Service:** 5003
 *   **Notification Service:** 5004
 *   **Transaction Service:** 5005
-*   **PostgreSQL:** 5432
-*   **Redis:** 6379
-*   **Kafka:** 9092
+*   **PostgreSQL:** 5101
+*   **Redis:** 5102
+*   **Kafka:** 5103

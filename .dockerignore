@@ -1,0 +1,38 @@
+# Build and Object Folders
+**/bin/
+**/obj/
+**/out/
+
+# IDE and Editor Folders
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.sln.docstates
+
+# Git
+.git/
+.gitignore
+
+# Docker
+docker-compose.yml
+docker-compose.override.yml
+.dockerignore
+
+# Temporary Files
+*.log
+*.tmp
+*.bak
+*.swp
+
+# Environment Variables (Security)
+.env
+
+# Test Results
+TestResults/
+**/TestResults/
+
+# Other
+Thumbs.db
+Desktop.ini
