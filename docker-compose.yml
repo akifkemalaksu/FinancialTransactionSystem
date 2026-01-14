@@ -55,6 +55,7 @@ services:
       echo -e 'Creating kafka topics...'
       /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka-server:29092 --create --if-not-exists --topic transfer-created --partitions 1 --replication-factor 1
       /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka-server:29092 --create --if-not-exists --topic transfer-completed --partitions 1 --replication-factor 1
+      /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka-server:29092 --create --if-not-exists --topic transfer-failed --partitions 1 --replication-factor 1
       
       echo -e 'Successfully created topics:'
       /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka-server:29092 --list
