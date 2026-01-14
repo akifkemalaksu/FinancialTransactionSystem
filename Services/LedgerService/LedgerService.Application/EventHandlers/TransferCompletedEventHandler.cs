@@ -24,6 +24,7 @@ namespace LedgerService.Application.EventHandlers
                 TransactionId = message.TransactionId,
                 AccountNumber = accountNumber,
                 Amount = message.Amount,
+                BalanceAfter = message.BalanceAfter,
                 Currency = message.Currency,
                 Type = direction,
                 Description = message.Description
