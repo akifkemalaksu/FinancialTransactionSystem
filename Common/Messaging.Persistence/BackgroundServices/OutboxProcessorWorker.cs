@@ -77,7 +77,7 @@ namespace Messaging.Persistence.BackgroundServices
                     _logger.LogError(ex, "Outbox Processor encountered an unexpected error.");
                 }
 
-                await Task.Delay(1000, stoppingToken);
+                await Task.Delay(10000, stoppingToken);
             }
         }
     }
