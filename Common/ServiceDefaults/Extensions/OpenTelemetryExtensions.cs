@@ -45,14 +45,7 @@ namespace ServiceDefaults.Extensions
                 {
                     tracing.SetResourceBuilder(resourceBuilder);
 
-                    if (builder.Environment.IsDevelopment())
-                    {
-                        tracing.SetSampler(new AlwaysOnSampler());
-                    }
-                    else
-                    {
-                        tracing.SetSampler(new TraceIdRatioBasedSampler(0.1));
-                    }
+                    tracing.SetSampler(new AlwaysOnSampler());
 
                     tracing.AddAspNetCoreInstrumentation(n => {
                         n.RecordException = true;
