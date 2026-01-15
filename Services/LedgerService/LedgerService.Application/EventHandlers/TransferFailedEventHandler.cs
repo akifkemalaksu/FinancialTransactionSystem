@@ -2,6 +2,7 @@ using LedgerService.Application.Features.LedgerFeatures.CreateLedger;
 using LedgerService.Domain.Constants;
 using Messaging.Abstractions;
 using Messaging.Contracts;
+using Microsoft.Extensions.Logging;
 using ServiceDefaults.Dtos.Responses;
 using ServiceDefaults.Enums;
 using ServiceDefaults.Interfaces;
@@ -9,12 +10,22 @@ using ServiceDefaults.Interfaces;
 namespace LedgerService.Application.EventHandlers
 {
     public class TransferFailedEventHandler(
-        ICommandDispatcher commandDispatcher
+        ICommandDispatcher commandDispatcher,
+        ILogger<TransferFailedEventHandler> _logger
     ) : IKafkaHandler<TransferFailedEvent>
     {
         public async Task HandleAsync(TransferFailedEvent message)
         {
             var type = (TransactionType)message.Type;
+
+            _logger.LogWarning(
+                "Handling TransferFailedEvent for transaction {TransactionId}, source {SourceAccount}, destination {DestinationAccount}, type {Type}, failure reason {FailureReason}",
+                message.TransactionId,
+                message.SourceAccountNumber,
+                message.DestinationAccountNumber,
+                type,
+                message.FailureReason
+            );
 
             if (string.IsNullOrEmpty(message.DestinationAccountNumber))
             {
@@ -29,6 +40,16 @@ namespace LedgerService.Application.EventHandlers
         private async Task CreateReversalEntryAsync(TransferFailedEvent message, string accountNumber, TransactionType type)
         {
             var direction = GetReversalDirection(message, accountNumber, type);
+
+            _logger.LogInformation(
+                "Creating reversal ledger entry for failed transaction {TransactionId}, account {AccountNumber}, amount {Amount}, currency {Currency}, type {Type}, direction {Direction}",
+                message.TransactionId,
+                accountNumber,
+                message.Amount,
+                message.Currency,
+                type,
+                direction
+            );
 
             var createLedgerCommand = new CreateLedgerCommand
             {

@@ -49,16 +49,30 @@ namespace TransactionService.Infrastructure.Services.Clients
                 using var response = await _httpClient.SendAsync(request, cancellationToken);
                 string responseBody = await response.Content.ReadAsStringAsync(cancellationToken) ?? string.Empty;
 
+                _logger.LogInformation("Received HTTP response {StatusCode} from {Url}", response.StatusCode, url);
+                _logger.LogDebug("HTTP response body from {Url}: {Body}", url, responseBody);
+
                 if (!response.IsSuccessStatusCode)
                 {
-                    _logger.LogWarning("HTTP request failed with status code {StatusCode} to {Url}", response.StatusCode, url);
+                    _logger.LogWarning(
+                        "HTTP request failed with status code {StatusCode} to {Url}. Response body: {Body}",
+                        response.StatusCode,
+                        url,
+                        responseBody
+                    );
                     response.EnsureSuccessStatusCode();
                 }
 
                 return await DeserializeResponseAsync(responseBody, response.Content, contentType, customDeserializer);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(
+                    ex,
+                    "Error occurred while sending HTTP request {Method} {Url}",
+                    method,
+                    url
+                );
                 throw;
             }
         }
@@ -82,16 +96,30 @@ namespace TransactionService.Infrastructure.Services.Clients
                 using var response = await _httpClient.SendAsync(request, cancellationToken);
                 string responseBody = await response.Content.ReadAsStringAsync(cancellationToken) ?? string.Empty;
 
+                _logger.LogInformation("Received HTTP response {StatusCode} from {Url}", response.StatusCode, url);
+                _logger.LogDebug("HTTP response body from {Url}: {Body}", url, responseBody);
+
                 if (!response.IsSuccessStatusCode)
                 {
-                    _logger.LogWarning("HTTP request failed with status code {StatusCode} to {Url}", response.StatusCode, url);
+                    _logger.LogWarning(
+                        "HTTP request failed with status code {StatusCode} to {Url}. Response body: {Body}",
+                        response.StatusCode,
+                        url,
+                        responseBody
+                    );
                     response.EnsureSuccessStatusCode();
                 }
 
                 return await DeserializeResponseAsync(responseBody, response.Content, contentType, customDeserializer);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(
+                    ex,
+                    "Error occurred while sending HTTP request with content {Method} {Url}",
+                    method,
+                    url
+                );
                 throw;
             }
         }

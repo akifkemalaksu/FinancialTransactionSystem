@@ -16,6 +16,8 @@ namespace TransactionService.Infrastructure.BackgroundServices
     {
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            logger.LogInformation("TransferStatusWorker started.");
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
@@ -29,6 +31,11 @@ namespace TransactionService.Infrastructure.BackgroundServices
 
                     if (pendingTransfers.Count != 0)
                     {
+                        logger.LogInformation(
+                            "Found {Count} pending transfers to process",
+                            pendingTransfers.Count
+                        );
+
                         foreach (var transfer in pendingTransfers)
                         {
                             var result = await apiService.ProcessAsync(transfer, stoppingToken);
@@ -36,10 +43,21 @@ namespace TransactionService.Infrastructure.BackgroundServices
                             if (result.IsSuccessful)
                             {
                                 transfer.Status = TransactionStatusEnum.Completed;
+
+                                logger.LogInformation(
+                                    "Transfer {TransactionId} completed successfully",
+                                    transfer.Id
+                                );
                             }
                             else
                             {
                                 transfer.Status = TransactionStatusEnum.Failed;
+
+                                logger.LogWarning(
+                                    "Transfer {TransactionId} failed with reason {FailureReason}",
+                                    transfer.Id,
+                                    result.FailureReason
+                                );
 
                                 var failedEvent = new TransferFailedEvent
                                 {

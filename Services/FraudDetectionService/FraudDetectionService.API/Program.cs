@@ -18,6 +18,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseExceptionHandling();
+app.UseRequestResponseLogging();
+
 app.UseRateLimiter();
 
 app.UseAuthorization();
