@@ -12,11 +12,21 @@ distributor:
 
 ingester:
   max_block_duration: 5m
+  lifecycler:
+    ring:
+      kvstore:
+        store: inmemory
+      replication_factor: 1
 
 storage:
   trace:
     backend: local
     local:
-      path: /var/tempo/traces
+      path: /tmp/tempo/traces
     wal:
-      path: /var/tempo/wal
+      path: /tmp/tempo/wal
+
+compactor:
+  ring:
+    kvstore:
+      store: inmemory
